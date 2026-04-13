@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PharmaRX</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Playfair+Display:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue:#0062cc;--blue-hover:#0055b3;--blue-light:#e8f1fb;--blue-mid:#c5dbf5;
+  --blue-soft:#f0f6ff;--bg:#f0f4f8;--surface:#ffffff;--surface2:#f7f9fc;
+  --border:#dde3ec;--text:#1a2638;--text2:#526070;--text3:#8fa3b8;
+  --green:#15a362;--green-light:#e6f7ef;--orange:#e07b2a;--orange-light:#fff3e6;
+  --red:#d63b3b;--red-light:#fceaea;--purple:#7c4dcc;--purple-light:#f0eafa;
+  --sidebar-w:220px;--nav-h:58px;--status-h:28px;--radius:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;}
+
+.topnav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px 0 0;z-index:200;box-shadow:0 1px 8px rgba(0,50,120,.06);}
+.logo-zone{width:var(--sidebar-w);height:100%;display:flex;align-items:center;gap:10px;padding:0 20px;border-right:1px solid var(--border);flex-shrink:0;}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,#0062cc,#38a8f5);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-icon svg{width:17px;height:17px;fill:white;}
+.logo-text{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--text);}
+.logo-text span{color:var(--blue);}
+.topnav-menu{display:flex;align-items:center;gap:2px;padding:0 16px;flex:1;}
+.tnm-item{position:relative;}
+.tnm-item>button{display:flex;align-items:center;gap:5px;padding:7px 12px;background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text2);border-radius:7px;transition:all .15s;white-space:nowrap;}
+.tnm-item>button:hover,.tnm-item.open>button{background:var(--blue-light);color:var(--blue);}
+.tnm-item>button svg{width:13px;height:13px;transition:transform .2s;}
+.tnm-item.open>button svg{transform:rotate(180deg);}
+.tnm-drop{display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:5px;min-width:210px;box-shadow:0 8px 28px rgba(0,50,120,.11);z-index:500;animation:fd .15s ease;}
+@keyframes fd{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.tnm-item.open .tnm-drop{display:block;}
+.tnm-drop a{display:flex;align-items:center;gap:9px;padding:8px 11px;text-decoration:none;font-size:13px;color:var(--text2);border-radius:7px;transition:all .12s;cursor:pointer;}
+.tnm-drop a:hover{background:var(--blue-light);color:var(--blue);padding-left:15px;}
+.tnm-drop a::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--blue-mid);flex-shrink:0;transition:background .12s;}
+.tnm-drop a:hover::before{background:var(--blue);}
+.topnav-right{display:flex;align-items:center;gap:10px;margin-left:auto;}
+.nav-search{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12.5px;color:var(--text3);cursor:pointer;}
+.nav-search svg{width:14px;height:14px;}
+.nav-notif{width:34px;height:34px;background:var(--bg);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;}
+.nav-notif svg{width:16px;height:16px;color:var(--text2);}
+.notif-dot{position:absolute;top:6px;right:7px;width:7px;height:7px;background:var(--red);border-radius:50%;border:2px solid var(--surface);}
+.nav-user{display:flex;align-items:center;gap:8px;padding:5px 10px 5px 5px;border:1px solid var(--border);border-radius:30px;cursor:pointer;}
+.nav-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0062cc,#38a8f5);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;}
+.nav-uname{font-size:12.5px;font-weight:500;color:var(--text2);}
+
+.sidebar{position:fixed;top:var(--nav-h);bottom:var(--status-h);left:0;width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;z-index:100;}
+.sidebar-section{padding:18px 12px 6px;}
+.sidebar-section-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);padding:0 8px 8px;}
+.sidebar-link{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;text-decoration:none;font-size:13px;color:var(--text2);transition:all .12s;cursor:pointer;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;}
+.sidebar-link svg{width:16px;height:16px;flex-shrink:0;opacity:.6;}
+.sidebar-link:hover{background:var(--blue-light);color:var(--blue);}
+.sidebar-link:hover svg{opacity:1;}
+.sidebar-link.active{background:var(--blue-light);color:var(--blue);font-weight:500;}
+.sidebar-link.active svg{opacity:1;}
+.sidebar-bottom{margin-top:auto;padding:12px;border-top:1px solid var(--border);}
+.sidebar-profile{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--bg);}
+.sidebar-profile-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#0062cc,#38a8f5);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:white;}
+.sidebar-profile-name{font-size:12.5px;font-weight:600;color:var(--text);}
+.sidebar-profile-role{font-size:11px;color:var(--text3);}
+
+.main{position:fixed;top:var(--nav-h);left:var(--sidebar-w);right:0;bottom:var(--status-h);overflow:hidden;background:var(--bg);display:flex;flex-direction:column;}
+.page-view{display:none;flex-direction:column;height:100%;}
+.page-view.active{display:flex;}
+
+.page-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;}
+.page-header-left{display:flex;align-items:center;gap:14px;}
+.page-icon{width:38px;height:38px;background:var(--blue-light);border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.page-icon svg{width:19px;height:19px;color:var(--blue);}
+.page-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--text);}
+.page-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+.page-breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3);}
+.page-breadcrumb span{color:var(--blue);font-weight:500;}
+.page-breadcrumb svg{width:12px;height:12px;}
+
+.content-area{flex:1;overflow:hidden;display:flex;gap:0;padding:20px 24px;}
+
+.simple-list-panel{width:220px;flex-shrink:0;background:var(--surface);border:1px solid var(--blue-mid);border-radius:6px;display:flex;flex-direction:column;margin-right:18px;overflow:hidden;}
+.simple-list-title{padding:11px 14px;font-size:13px;font-weight:bold;color:var(--blue);background:var(--blue-light);border-bottom:1px solid var(--blue-mid);}
+.simple-list-body{flex:1;overflow-y:auto;padding:8px;}
+.simple-list-body::-webkit-scrollbar{width:3px;}
+.simple-list-body::-webkit-scrollbar-thumb{background:var(--blue-mid);border-radius:3px;}
+.simple-list-item{padding:9px 12px;border-radius:4px;cursor:pointer;font-size:13px;color:var(--text2);border:1px solid transparent;margin-bottom:4px;transition:all .12s;}
+.simple-list-item:hover{background:var(--blue-soft);border-color:var(--blue-mid);}
+.simple-list-item.selected{background:var(--blue);color:white;}
+.simple-list-empty{font-size:12px;color:var(--text3);text-align:center;padding:20px 10px;}
+.simple-form-panel{flex:1;background:var(--surface);border:1px solid var(--blue-mid);border-radius:6px;display:flex;flex-direction:column;overflow:hidden;}
+.simple-form-title{padding:11px 18px;font-size:13px;font-weight:bold;color:var(--blue);background:var(--blue-light);border-bottom:1px solid var(--blue-mid);}
+.simple-form-body{flex:1;padding:20px 18px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;}
+.simple-field{display:flex;flex-direction:column;gap:5px;}
+.simple-label{font-size:11.5px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;}
+.simple-input,.simple-select{padding:9px 12px;border:1px solid var(--blue-mid);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--text);outline:none;transition:border-color .15s;background:var(--surface);width:100%;appearance:none;}
+.simple-input:focus,.simple-select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,98,204,.08);}
+.simple-input[readonly]{background:var(--bg);color:var(--text2);cursor:default;}
+.simple-input[readonly]:focus{box-shadow:none;border-color:var(--blue-mid);}
+.select-wrap{position:relative;}
+.select-wrap::after{content:'';position:absolute;right:12px;top:50%;transform:translateY(-50%);width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--text3);pointer-events:none;}
+.simple-form-footer{padding:14px 18px;border-top:1px solid var(--blue-mid);background:var(--surface2);display:flex;gap:10px;flex-shrink:0;}
+.simple-btn{padding:9px 22px;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--blue-mid);transition:all .15s;}
+.simple-btn-new{background:var(--blue-soft);color:var(--blue);}
+.simple-btn-new:hover{background:var(--blue-light);}
+.simple-btn-save{background:var(--blue);color:white;border-color:var(--blue);}
+.simple-btn-save:hover{background:var(--blue-hover);}
+.simple-btn-delete{background:var(--red-light);color:var(--red);border-color:#f5c8c8;margin-left:auto;}
+.simple-btn-delete:hover:not(:disabled){background:#f9d0d0;}
+.simple-btn-delete:disabled{opacity:.4;cursor:not-allowed;}
+
+/* INVOICE */
+.inv-page-body{flex:1;overflow:hidden;display:flex;flex-direction:column;padding:20px 24px;gap:16px;}
+.inv-top-row{display:grid;grid-template-columns:160px 1fr 1fr;gap:16px;background:var(--surface);border:1px solid var(--blue-mid);border-radius:6px;padding:18px 20px;flex-shrink:0;}
+.inv-field{display:flex;flex-direction:column;gap:5px;}
+.inv-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:6px;}
+.inv-label .auto-tag{background:var(--blue-light);color:var(--blue);font-size:9px;padding:1px 5px;border-radius:3px;letter-spacing:.04em;}
+.inv-input,.inv-select{padding:8px 12px;border:1px solid var(--blue-mid);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--text);outline:none;transition:border-color .15s;background:var(--surface);width:100%;appearance:none;}
+.inv-input:focus,.inv-select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,98,204,.08);}
+.inv-input[readonly]{background:var(--bg);color:var(--text2);cursor:default;}
+.inv-input[readonly]:focus{box-shadow:none;border-color:var(--blue-mid);}
+.inv-input[disabled]{background:var(--bg);color:var(--text3);cursor:not-allowed;opacity:.7;}
+.inv-select[disabled]{background:var(--bg);color:var(--text3);cursor:not-allowed;opacity:.7;}
+
+.inv-table-section{flex:1;overflow:hidden;background:var(--surface);border:1px solid var(--blue-mid);border-radius:6px;display:flex;flex-direction:column;}
+.inv-table-header{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:var(--blue-light);border-bottom:1px solid var(--blue-mid);flex-shrink:0;}
+.inv-table-title{font-size:13px;font-weight:bold;color:var(--blue);display:flex;align-items:center;gap:8px;}
+.inv-table-title svg{width:14px;height:14px;}
+.inv-add-row{display:flex;align-items:flex-end;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface2);flex-shrink:0;}
+.inv-add-field{display:flex;flex-direction:column;gap:4px;flex:1;}
+.inv-add-label{font-size:10.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
+.inv-add-input,.inv-add-select{padding:7px 10px;border:1px solid var(--blue-mid);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;background:var(--surface);width:100%;appearance:none;}
+.inv-add-input:focus,.inv-add-select:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(0,98,204,.08);}
+.inv-add-input[disabled],.inv-add-select[disabled]{background:var(--bg);color:var(--text3);cursor:not-allowed;opacity:.6;}
+.inv-add-btn{padding:7px 18px;background:var(--blue);color:white;border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:6px;transition:background .15s;}
+.inv-add-btn:hover:not(:disabled){background:var(--blue-hover);}
+.inv-add-btn:disabled{background:var(--text3);cursor:not-allowed;opacity:.6;}
+.inv-table-wrap{flex:1;overflow-y:auto;}
+.inv-table-wrap::-webkit-scrollbar{width:4px;}
+.inv-table-wrap::-webkit-scrollbar-thumb{background:var(--blue-mid);border-radius:4px;}
+.inv-grid{width:100%;border-collapse:collapse;}
+.inv-grid thead tr{background:var(--surface2);position:sticky;top:0;z-index:1;}
+.inv-grid th{padding:10px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);white-space:nowrap;}
+.inv-grid td{padding:10px 16px;font-size:13px;color:var(--text2);border-bottom:1px solid var(--border);}
+.inv-grid tbody tr:last-child td{border-bottom:none;}
+.inv-grid .td-id{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text3);width:60px;}
+.inv-grid .td-del{width:48px;text-align:center;}
+.inv-grid .del-row-btn{width:26px;height:26px;background:var(--red-light);border:1px solid #f0c0c0;border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .12s;}
+.inv-grid .del-row-btn:hover{background:#f9d0d0;}
+.inv-grid .del-row-btn:disabled{opacity:.3;cursor:not-allowed;}
+.inv-grid .del-row-btn svg{width:13px;height:13px;color:var(--red);}
+.inv-empty{text-align:center;padding:40px;color:var(--text3);font-size:13px;}
+.inv-footer{display:flex;align-items:center;gap:10px;padding:14px 0 0;flex-shrink:0;}
+.inv-meta{font-size:12px;color:var(--text3);margin-left:auto;font-family:'JetBrains Mono',monospace;}
+
+/* Read-only overlay banner */
+.readonly-banner{display:flex;align-items:center;gap:8px;padding:8px 16px;background:#fff3e6;border-bottom:1px solid #f0c090;font-size:12.5px;color:#8a4a10;font-weight:500;flex-shrink:0;}
+.readonly-banner svg{width:14px;height:14px;flex-shrink:0;}
+.readonly-banner.hidden{display:none;}
+
+/* inline editing */
+.edit-click-hint{font-size:10px;color:var(--text3);font-style:italic;padding:0 16px 8px;letter-spacing:.01em;display:flex;align-items:center;gap:5px;background:var(--surface2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.edit-click-hint svg{width:11px;height:11px;color:var(--text3);}
+.edit-click-hint.hidden{display:none;}
+.inv-grid tbody tr.editing-row td{background:#fffdf4;border-top:1.5px solid var(--orange);border-bottom:1.5px solid var(--orange);}
+.inv-grid tbody tr.editing-row td:first-child{border-left:1.5px solid var(--orange);}
+.inv-grid tbody tr.editing-row td:last-child{border-right:1.5px solid var(--orange);}
+.inline-select,.inline-input{width:100%;padding:5px 8px;border:1px solid var(--blue-mid);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--surface);outline:none;appearance:none;}
+.inline-select:focus,.inline-input:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(0,98,204,.1);}
+.inline-input[type=number]{font-family:'JetBrains Mono',monospace;font-size:13px;width:72px;}
+.inline-actions{display:flex;gap:5px;align-items:center;}
+.inline-save-btn{padding:4px 10px;background:var(--blue);color:white;border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .12s;}
+.inline-save-btn:hover{background:var(--blue-hover);}
+.inline-cancel-btn{padding:4px 8px;background:var(--surface);color:var(--text3);border:1px solid var(--border);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .12s;}
+.inline-cancel-btn:hover{background:var(--bg);}
+
+.inv-left-panel{width:240px;flex-shrink:0;background:var(--surface);border:1px solid var(--blue-mid);border-radius:6px;display:flex;flex-direction:column;margin-right:18px;overflow:hidden;}
+.inv-left-title{padding:11px 14px;font-size:13px;font-weight:bold;color:var(--blue);background:var(--blue-light);border-bottom:1px solid var(--blue-mid);display:flex;align-items:center;justify-content:space-between;}
+.inv-left-list{flex:1;overflow-y:auto;padding:8px;}
+.inv-left-list::-webkit-scrollbar{width:3px;}
+.inv-left-list::-webkit-scrollbar-thumb{background:var(--blue-mid);border-radius:3px;}
+.inv-list-item{padding:10px 12px;border-radius:4px;cursor:pointer;font-size:12.5px;color:var(--text2);border:1px solid transparent;margin-bottom:4px;transition:all .12s;}
+.inv-list-item:hover{background:var(--blue-soft);border-color:var(--blue-mid);}
+.inv-list-item.selected{background:var(--blue);color:white;}
+.inv-list-item.selected .inv-list-sub{color:rgba(255,255,255,.75);}
+.inv-list-num{font-weight:500;}
+.inv-list-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+.inv-right-panel{flex:1;display:flex;flex-direction:column;gap:16px;overflow:hidden;}
+
+/* DASHBOARD */
+.dash-scroll{flex:1;overflow-y:auto;padding:24px;}
+.dash-scroll::-webkit-scrollbar{width:4px;}
+.dash-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px;transition:box-shadow .2s;}
+.stat-card:hover{box-shadow:0 4px 20px rgba(0,50,120,.08);}
+.stat-card-top{display:flex;align-items:center;justify-content:space-between;}
+.stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.stat-icon svg{width:20px;height:20px;}
+.stat-icon.blue{background:var(--blue-light);color:var(--blue);}
+.stat-icon.green{background:var(--green-light);color:var(--green);}
+.stat-icon.orange{background:var(--orange-light);color:var(--orange);}
+.stat-icon.purple{background:var(--purple-light);color:var(--purple);}
+.stat-change{font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;}
+.stat-change.up{background:var(--green-light);color:var(--green);}
+.stat-num{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--text);line-height:1;}
+.stat-label{font-size:12px;color:var(--text3);margin-top:2px;}
+.dash-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+.dash-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.dash-card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.dash-card-title{font-size:13px;font-weight:600;color:var(--text);}
+.dash-card-sub{font-size:11px;color:var(--text3);}
+.dash-card-body{padding:16px 20px;}
+.activity-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.activity-item:last-child{border-bottom:none;}
+.activity-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.activity-dot.green{background:var(--green);}
+.activity-dot.blue{background:var(--blue);}
+.activity-dot.orange{background:var(--orange);}
+.activity-dot.red{background:var(--red);}
+.activity-text{font-size:12.5px;color:var(--text2);line-height:1.5;}
+.activity-time{font-size:11px;color:var(--text3);margin-top:2px;font-family:'JetBrains Mono',monospace;}
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.quick-btn{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;font-size:12.5px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.quick-btn svg{width:16px;height:16px;color:var(--blue);}
+.quick-btn:hover{background:var(--blue-light);border-color:var(--blue-mid);color:var(--blue);}
+
+.table-wrap{flex:1;overflow:auto;padding:20px 24px;}
+.data-table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:12px;overflow:hidden;border:1px solid var(--border);}
+.data-table th{padding:12px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);}
+.data-table td{padding:12px 16px;font-size:13px;color:var(--text2);border-bottom:1px solid var(--border);}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:var(--blue-soft);}
+.badge-status{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge-status.success{background:var(--green-light);color:var(--green);}
+.badge-status.info{background:var(--blue-light);color:var(--blue);}
+.badge-status.warning{background:var(--orange-light);color:var(--orange);}
+.badge-status.danger{background:var(--red-light);color:var(--red);}
+
+.placeholder-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px;}
+.placeholder-box{text-align:center;max-width:400px;}
+.placeholder-icon{width:72px;height:72px;border-radius:20px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+.placeholder-icon svg{width:34px;height:34px;color:var(--blue);}
+.placeholder-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:var(--text);margin-bottom:10px;}
+.placeholder-desc{font-size:13.5px;color:var(--text2);line-height:1.7;margin-bottom:24px;}
+.placeholder-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;background:var(--blue-light);color:var(--blue);border-radius:20px;font-size:12px;font-weight:600;}
+
+/* RECALL PAGE */
+.recall-wrap{flex:1;overflow:hidden;display:flex;flex-direction:column;padding:20px 24px;gap:16px;}
+.recall-search-bar{background:var(--surface);border:1px solid var(--blue-mid);border-radius:6px;padding:16px 20px;display:flex;align-items:flex-end;gap:14px;flex-shrink:0;}
+.recall-search-field{display:flex;flex-direction:column;gap:5px;flex:1;max-width:360px;}
+.recall-search-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;}
+.recall-search-select{padding:9px 12px;border:1px solid var(--blue-mid);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--text);outline:none;background:var(--surface);width:100%;appearance:none;transition:border-color .15s;}
+.recall-search-select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,98,204,.08);}
+.recall-btn{padding:9px 28px;background:var(--blue);color:white;border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .15s;white-space:nowrap;}
+.recall-btn:hover{background:var(--blue-hover);}
+.recall-btn svg{width:14px;height:14px;}
+.recall-result-panel{flex:1;overflow:hidden;background:var(--surface);border:1px solid var(--blue-mid);border-radius:6px;display:flex;flex-direction:column;}
+.recall-result-header{padding:11px 16px;background:var(--blue-light);border-bottom:1px solid var(--blue-mid);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.recall-result-title{font-size:13px;font-weight:bold;color:var(--blue);}
+.recall-result-count{font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+.recall-table-wrap{flex:1;overflow-y:auto;}
+.recall-table-wrap::-webkit-scrollbar{width:4px;}
+.recall-table-wrap::-webkit-scrollbar-thumb{background:var(--blue-mid);border-radius:4px;}
+.recall-table{width:100%;border-collapse:collapse;}
+.recall-table th{padding:10px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1;}
+.recall-table td{padding:10px 16px;font-size:13px;color:var(--text2);border-bottom:1px solid var(--border);}
+.recall-table tbody tr:last-child td{border-bottom:none;}
+.recall-table tbody tr:hover td{background:var(--blue-soft);}
+.recall-empty{text-align:center;padding:48px;color:var(--text3);font-size:13px;}
+
+/* REPRINT PAGE */
+.rp-wrap{flex:1;overflow:hidden;display:flex;padding:20px 24px;gap:18px;}
+.rp-left{width:260px;flex-shrink:0;background:var(--surface);border:1px solid var(--blue-mid);border-radius:6px;display:flex;flex-direction:column;overflow:hidden;}
+.rp-left-title{padding:11px 14px;font-size:13px;font-weight:bold;color:var(--blue);background:var(--blue-light);border-bottom:1px solid var(--blue-mid);display:flex;align-items:center;justify-content:space-between;}
+.rp-left-list{flex:1;overflow-y:auto;padding:8px;}
+.rp-left-list::-webkit-scrollbar{width:3px;}
+.rp-left-list::-webkit-scrollbar-thumb{background:var(--blue-mid);border-radius:3px;}
+.rp-inv-item{padding:10px 12px;border-radius:4px;cursor:pointer;font-size:12.5px;color:var(--text2);border:1px solid transparent;margin-bottom:4px;transition:all .12s;}
+.rp-inv-item:hover{background:var(--blue-soft);border-color:var(--blue-mid);}
+.rp-inv-item.selected{background:var(--blue);color:white;}
+.rp-inv-item.selected .rp-inv-sub{color:rgba(255,255,255,.75);}
+.rp-inv-num{font-weight:500;}
+.rp-inv-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+.rp-right{flex:1;background:var(--surface);border:1px solid var(--blue-mid);border-radius:6px;display:flex;flex-direction:column;overflow:hidden;}
+.rp-right-header{padding:11px 16px;background:var(--blue-light);border-bottom:1px solid var(--blue-mid);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.rp-right-title{font-size:13px;font-weight:bold;color:var(--blue);}
+.rp-table-wrap{flex:1;overflow-y:auto;}
+.rp-table{width:100%;border-collapse:collapse;}
+.rp-table th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1;white-space:nowrap;}
+.rp-table td{padding:10px 14px;font-size:13px;color:var(--text2);border-bottom:1px solid var(--border);vertical-align:middle;}
+.rp-table tbody tr:last-child td{border-bottom:none;}
+.rp-table tbody tr:hover td{background:var(--blue-soft);}
+.rp-qty-select{padding:5px 8px;border:1px solid var(--blue-mid);border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text);background:var(--surface);outline:none;appearance:none;min-width:70px;cursor:pointer;}
+.rp-qty-select:disabled{background:var(--bg);color:var(--text3);cursor:not-allowed;opacity:.5;}
+.rp-qty-select:focus{border-color:var(--blue);}
+.rp-checkbox{width:15px;height:15px;cursor:pointer;accent-color:var(--blue);}
+.rp-footer{padding:12px 16px;border-top:1px solid var(--blue-mid);background:var(--surface2);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.rp-footer-meta{font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-left:auto;}
+.rp-mode-label{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;}
+
+.toast{position:fixed;bottom:46px;right:24px;background:var(--text);color:white;padding:10px 18px;border-radius:10px;font-size:13px;display:flex;align-items:center;gap:10px;box-shadow:0 6px 20px rgba(0,0,0,.2);z-index:999;animation:toastIn .25s ease,toastOut .3s ease 2.2s forwards;}
+.toast.success{background:#1a7a4a;}
+.toast.error{background:var(--red);}
+.toast svg{width:16px;height:16px;}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(10px)}}
+
+.statusbar{position:fixed;bottom:0;left:0;right:0;height:var(--status-h);background:var(--blue);display:flex;align-items:center;padding:0 16px;gap:20px;z-index:200;}
+.status-item{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,.75);}
+.status-item svg{width:12px;height:12px;}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#4cdf98;}
+.status-sep{width:1px;height:14px;background:rgba(255,255,255,.2);}
+.status-right{margin-left:auto;}
+.status-page{color:rgba(255,255,255,.95);font-weight:500;}
+.qr-real-badge{display:inline-flex;align-items:center;gap:4px;background:#e6f7ef;color:#15a362;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:.04em;margin-left:6px;}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="logo-zone">
+    <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H7l5-8v4h4l-5 8z"/></svg></div>
+    <span class="logo-text">Pharma<span>RX</span></span>
+  </div>
+  <div class="topnav-menu">
+    <div class="tnm-item" onclick="toggleMenu(this)">
+      <button>Master File <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="tnm-drop">
+        <a onclick="navigate('customer')">Customer Definition</a>
+        <a onclick="navigate('item')">Item Definition</a>
+        <a onclick="navigate('batch')">Batch Definition</a>
+      </div>
+    </div>
+    <div class="tnm-item" onclick="toggleMenu(this)">
+      <button>Print Label <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="tnm-drop">
+        <a onclick="navigate('invoice-packet')">Create Invoice Packet</a>
+        <a onclick="navigate('received-invoice')">Received Invoice from System</a>
+      </div>
+    </div>
+    <div class="tnm-item" onclick="toggleMenu(this)">
+      <button>Recall <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="tnm-drop"><a onclick="navigate('recall-batch')">Recall Batch</a></div>
+    </div>
+    <div class="tnm-item" onclick="toggleMenu(this)">
+      <button>Report <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="tnm-drop">
+        <a onclick="navigate('traceability')">Batch Traceability</a>
+        <a onclick="navigate('serial-history')">Serial History Printed</a>
+        <a onclick="navigate('recall-report')">Recall Report</a>
+      </div>
+    </div>
+    <div class="tnm-item" onclick="toggleMenu(this)">
+      <button>Adjust Action <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="tnm-drop"><a onclick="navigate('reprint')">Reprint Label</a></div>
+    </div>
+    <div class="tnm-item" onclick="toggleMenu(this)">
+      <button>Audit Trail <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="tnm-drop">
+        <a onclick="navigate('audit')">Audit Trail</a>
+        <a onclick="navigate('login-log')">Login / Logout</a>
+      </div>
+    </div>
+    <div class="tnm-item" onclick="toggleMenu(this)">
+      <button>User Mgmt <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="tnm-drop">
+        <a onclick="navigate('roles')">Roles &amp; Groups</a>
+        <a onclick="navigate('user-file')">User File</a>
+        <a onclick="navigate('change-password')">Change Password</a>
+      </div>
+    </div>
+  </div>
+  <div class="topnav-right">
+    <div class="nav-search" onclick="showToast('Search coming soon.','info')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Search...</div>
+    <div class="nav-notif" onclick="showToast('No new notifications.','info')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="notif-dot"></div></div>
+    <div class="nav-user"><div class="nav-avatar">AD</div><span class="nav-uname">Admin</span></div>
+  </div>
+</nav>
+
+<aside class="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Master File</div>
+    <button class="sidebar-link" id="sl-customer" onclick="navigate('customer')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Customer Definition</button>
+    <button class="sidebar-link" id="sl-item" onclick="navigate('item')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>Item Definition</button>
+    <button class="sidebar-link" id="sl-batch" onclick="navigate('batch')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Batch Definition</button>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Print Label</div>
+    <button class="sidebar-link" id="sl-invoice-packet" onclick="navigate('invoice-packet')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Create Invoice Packet</button>
+    <button class="sidebar-link" id="sl-received-invoice" onclick="navigate('received-invoice')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg>Received Invoice</button>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Overview</div>
+    <button class="sidebar-link" id="sl-dashboard" onclick="navigate('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</button>
+    <button class="sidebar-link" id="sl-audit" onclick="navigate('audit')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg>Audit Trail</button>
+    <button class="sidebar-link" id="sl-recall-batch" onclick="navigate('recall-batch')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>Recall Batch</button>
+    <button class="sidebar-link" id="sl-reprint" onclick="navigate('reprint')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Reprint Label</button>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="sidebar-profile">
+      <div class="sidebar-profile-avatar">AD</div>
+      <div><div class="sidebar-profile-name">Admin User</div><div class="sidebar-profile-role">System Administrator</div></div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- Customer Definition -->
+<div class="page-view" id="page-customer">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      <div><div class="page-title">Customer Definition</div><div class="page-sub">Manage and define customer records</div></div>
+    </div>
+    <div class="page-breadcrumb">Master File <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Customer Definition</span></div>
+  </div>
+  <div class="content-area">
+    <div class="simple-list-panel">
+      <div class="simple-list-title">List</div>
+      <div class="simple-list-body" id="list-customer"><div class="simple-list-empty">No records yet.</div></div>
+    </div>
+    <div class="simple-form-panel">
+      <div class="simple-form-title">Customer Definition</div>
+      <div class="simple-form-body">
+        <div class="simple-field"><label class="simple-label">Serial Number</label><input type="text" class="simple-input" id="c-serial" readonly></div>
+        <div class="simple-field"><label class="simple-label">Customer Name</label><input type="text" class="simple-input" id="c-name" placeholder="Enter customer name"></div>
+        <div class="simple-field"><label class="simple-label">Customer Type</label><input type="text" class="simple-input" id="c-type" placeholder="Enter customer type"></div>
+      </div>
+      <div class="simple-form-footer">
+        <button class="simple-btn simple-btn-new" onclick="newRec('customer')">New</button>
+        <button class="simple-btn simple-btn-save" onclick="saveRec('customer')">Save</button>
+        <button class="simple-btn simple-btn-delete" id="del-customer" onclick="deleteRec('customer')" disabled>Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Item Definition -->
+<div class="page-view" id="page-item">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg></div>
+      <div><div class="page-title">Item Definition</div><div class="page-sub">Manage pharmaceutical items and products</div></div>
+    </div>
+    <div class="page-breadcrumb">Master File <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Item Definition</span></div>
+  </div>
+  <div class="content-area">
+    <div class="simple-list-panel">
+      <div class="simple-list-title">List</div>
+      <div class="simple-list-body" id="list-item"><div class="simple-list-empty">No records yet.</div></div>
+    </div>
+    <div class="simple-form-panel">
+      <div class="simple-form-title">Item Definition</div>
+      <div class="simple-form-body">
+        <div class="simple-field"><label class="simple-label">Serial Number</label><input type="text" class="simple-input" id="i-serial" readonly></div>
+        <div class="simple-field"><label class="simple-label">Item Name</label><input type="text" class="simple-input" id="i-name" placeholder="Enter item name"></div>
+      </div>
+      <div class="simple-form-footer">
+        <button class="simple-btn simple-btn-new" onclick="newRec('item')">New</button>
+        <button class="simple-btn simple-btn-save" onclick="saveRec('item')">Save</button>
+        <button class="simple-btn simple-btn-delete" id="del-item" onclick="deleteRec('item')" disabled>Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Batch Definition -->
+<div class="page-view" id="page-batch">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <div><div class="page-title">Batch Definition</div><div class="page-sub">Register and manage product batches</div></div>
+    </div>
+    <div class="page-breadcrumb">Master File <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Batch Definition</span></div>
+  </div>
+  <div class="content-area">
+    <div class="simple-list-panel">
+      <div class="simple-list-title">List</div>
+      <div class="simple-list-body" id="list-batch"><div class="simple-list-empty">No records yet.</div></div>
+    </div>
+    <div class="simple-form-panel">
+      <div class="simple-form-title">Batch Definition</div>
+      <div class="simple-form-body">
+        <div class="simple-field"><label class="simple-label">Serial Number</label><input type="text" class="simple-input" id="b-serial" readonly></div>
+        <div class="simple-field"><label class="simple-label">Item Name</label><div class="select-wrap"><select class="simple-select" id="b-name"><option value="">— Select Item —</option></select></div></div>
+        <div class="simple-field"><label class="simple-label">Batch No</label><input type="text" class="simple-input" id="b-batch" placeholder="Enter batch number"></div>
+        <div class="simple-field"><label class="simple-label">Production Date</label><input type="date" class="simple-input" id="b-prod"></div>
+        <div class="simple-field"><label class="simple-label">Expiry Date</label><input type="date" class="simple-input" id="b-exp"></div>
+      </div>
+      <div class="simple-form-footer">
+        <button class="simple-btn simple-btn-new" onclick="newRec('batch')">New</button>
+        <button class="simple-btn simple-btn-save" onclick="saveRec('batch')">Save</button>
+        <button class="simple-btn simple-btn-delete" id="del-batch" onclick="deleteRec('batch')" disabled>Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE INVOICE PACKET -->
+<div class="page-view" id="page-invoice-packet">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+      <div><div class="page-title">Create Invoice Packet</div><div class="page-sub">One invoice = one record with multiple items</div></div>
+    </div>
+    <div class="page-breadcrumb">Print Label <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Create Invoice Packet</span></div>
+  </div>
+  <div style="flex:1;overflow:hidden;display:flex;padding:20px 24px;gap:18px">
+    <div class="inv-left-panel">
+      <div class="inv-left-title">
+        <span>Saved Invoices</span>
+        <span id="inv-list-badge" style="background:var(--blue);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;font-family:'JetBrains Mono',monospace">0</span>
+      </div>
+      <div class="inv-left-list" id="inv-left-list">
+        <div class="simple-list-empty" id="inv-left-empty">No saved invoices yet.<br>Fill the form and click Save.</div>
+      </div>
+    </div>
+    <div class="inv-right-panel">
+      <div class="readonly-banner hidden" id="inv-readonly-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        This invoice is read-only. Click <strong style="margin:0 4px">Configure</strong> in the footer to enable editing.
+      </div>
+      <div class="inv-top-row" style="flex-shrink:0">
+        <div class="inv-field">
+          <label class="inv-label">Serial No. <span class="auto-tag">Auto</span></label>
+          <input type="text" class="inv-input" id="inv-serial" readonly value="IC-1">
+        </div>
+        <div class="inv-field">
+          <label class="inv-label">Invoice Number</label>
+          <input type="text" class="inv-input" id="inv-number" placeholder="e.g. INV-2024-0001">
+        </div>
+        <div class="inv-field">
+          <label class="inv-label">Customer Name</label>
+          <div class="select-wrap"><select class="inv-select" id="inv-customer"><option value="">— Select Customer —</option></select></div>
+        </div>
+      </div>
+      <div class="inv-table-section">
+        <div class="inv-table-header">
+          <div class="inv-table-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Invoice Lines
+          </div>
+          <span id="inv-row-count" style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace">0 lines · 0 QR codes</span>
+        </div>
+        <div class="edit-click-hint hidden" id="inv-edit-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Click any row to edit its item, batch, or quantity directly
+        </div>
+        <div class="inv-add-row" id="inv-add-row">
+          <div class="inv-add-field">
+            <div class="inv-add-label">Item Name</div>
+            <div class="select-wrap"><select class="inv-add-select" id="add-item"><option value="">— Select Item —</option></select></div>
+          </div>
+          <div class="inv-add-field">
+            <div class="inv-add-label">Batch Number</div>
+            <div class="select-wrap"><select class="inv-add-select" id="add-batch"><option value="">— Select Batch —</option></select></div>
+          </div>
+          <div class="inv-add-field" style="max-width:110px">
+            <div class="inv-add-label">Quantity</div>
+            <input type="number" class="inv-add-input" id="add-qty" value="1" min="1" max="9999" style="font-family:'JetBrains Mono',monospace">
+          </div>
+          <button class="inv-add-btn" id="inv-add-line-btn" onclick="addInvLine()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Line
+          </button>
+        </div>
+        <div class="inv-table-wrap">
+          <table class="inv-grid">
+            <thead><tr>
+              <th class="td-id">#</th>
+              <th>Item Name</th>
+              <th>Batch No.</th>
+              <th style="width:80px;text-align:center">Qty</th>
+              <th style="width:90px;text-align:center">QR Codes</th>
+              <th class="td-del"></th>
+            </tr></thead>
+            <tbody id="inv-tbody">
+              <tr id="inv-empty-row"><td colspan="6" class="inv-empty">No lines yet. Use the bar above to add items.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="inv-footer">
+        <button class="simple-btn simple-btn-new" onclick="invNew()">New</button>
+        <button class="simple-btn simple-btn-save" id="btn-inv-save" onclick="invSave()">Save</button>
+        <button class="simple-btn simple-btn-delete" id="del-invoice" onclick="invDelete()" disabled>Delete</button>
+        <button class="simple-btn" id="btn-inv-configure" onclick="invConfigure()" disabled
+          style="background:var(--orange-light);color:var(--orange);border-color:#f0c080;display:flex;align-items:center;gap:6px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Configure
+        </button>
+        <button class="simple-btn" id="btn-inv-print" onclick="invPrint()" disabled
+          style="background:var(--blue);color:white;border-color:var(--blue)">
+          Print Labels
+        </button>
+        <div class="inv-meta" id="inv-meta">No invoice loaded</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div class="page-view" id="page-dashboard">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+      <div><div class="page-title">Dashboard</div><div class="page-sub">System overview and quick actions</div></div>
+    </div>
+    <div class="page-breadcrumb">Overview <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Dashboard</span></div>
+  </div>
+  <div class="dash-scroll">
+    <div class="dash-grid">
+      <div class="stat-card"><div class="stat-card-top"><div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="stat-change up" id="dash-cust-change">+0</span></div><div><div class="stat-num" id="dash-cust-num">0</div><div class="stat-label">Total Customers</div></div></div>
+      <div class="stat-card"><div class="stat-card-top"><div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg></div><span class="stat-change up" id="dash-item-change">+0</span></div><div><div class="stat-num" id="dash-item-num">0</div><div class="stat-label">Total Items</div></div></div>
+      <div class="stat-card"><div class="stat-card-top"><div class="stat-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span class="stat-change up" id="dash-batch-change">+0</span></div><div><div class="stat-num" id="dash-batch-num">0</div><div class="stat-label">Total Batches</div></div></div>
+      <div class="stat-card"><div class="stat-card-top"><div class="stat-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/></svg></div><span class="stat-change up" id="dash-inv-change">+0</span></div><div><div class="stat-num" id="dash-inv-num">0</div><div class="stat-label">Invoice Packets</div></div></div>
+    </div>
+    <div class="dash-row">
+      <div class="dash-card">
+        <div class="dash-card-header"><div class="dash-card-title">Recent Activity</div><div class="dash-card-sub">Last system events</div></div>
+        <div class="dash-card-body" id="dash-activity"><div class="activity-item"><div class="activity-dot blue"></div><div><div class="activity-text">System initialized — PharmaRX ready.</div><div class="activity-time">Just now</div></div></div></div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-header"><div class="dash-card-title">Quick Actions</div><div class="dash-card-sub">Common tasks</div></div>
+        <div class="dash-card-body">
+          <div class="quick-actions">
+            <button class="quick-btn" onclick="navigate('customer')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>New Customer</button>
+            <button class="quick-btn" onclick="navigate('item')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>New Item</button>
+            <button class="quick-btn" onclick="navigate('invoice-packet')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/></svg>Invoice Packet</button>
+            <button class="quick-btn" onclick="navigate('audit')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg>Audit Trail</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Audit Trail -->
+<div class="page-view" id="page-audit">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg></div>
+      <div><div class="page-title">Audit Trail</div><div class="page-sub">Track all system actions and changes</div></div>
+    </div>
+    <div class="page-breadcrumb">Audit Trail <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>All Events</span></div>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table"><thead><tr><th>#</th><th>Timestamp</th><th>User</th><th>Action</th><th>Module</th><th>Record</th><th>Status</th></tr></thead>
+    <tbody id="audit-tbody"><tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text3);font-size:13px;">No audit entries yet.</td></tr></tbody></table>
+  </div>
+</div>
+
+<!-- Login Log -->
+<div class="page-view" id="page-login-log">
+  <div class="page-header"><div class="page-header-left"><div class="page-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg></div><div><div class="page-title">Login / Logout Log</div><div class="page-sub">User session history</div></div></div><div class="page-breadcrumb">Audit Trail <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Login / Logout</span></div></div>
+  <div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>Timestamp</th><th>User</th><th>Event</th><th>IP Address</th><th>Status</th></tr></thead><tbody><tr><td>1</td><td style="font-family:'JetBrains Mono',monospace;font-size:12px;" id="login-time"></td><td>Admin User</td><td>Login</td><td>127.0.0.1</td><td><span class="badge-status success">Success</span></td></tr></tbody></table></div>
+</div>
+
+<!-- Received Invoice from System -->
+<div class="page-view" id="page-received-invoice">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg></div>
+      <div><div class="page-title">Received Invoice from System</div><div class="page-sub">View read-only invoices received from external systems</div></div>
+    </div>
+    <div class="page-breadcrumb">Print Label <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Received Invoice from System</span></div>
+  </div>
+  <div class="content-area">
+    <div class="simple-list-panel" style="width:260px">
+      <div class="simple-list-title" style="display:flex;align-items:center;justify-content:space-between">
+        <span>Received Invoices</span>
+        <span id="ri-list-count" style="background:var(--blue);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;font-family:'JetBrains Mono',monospace">0</span>
+      </div>
+      <div style="padding:8px 8px 4px">
+        <div style="display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:6px 10px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;color:var(--text3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="ri-search" placeholder="Search…" oninput="riFilter()" style="border:none;background:none;outline:none;font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--text2);width:100%">
+        </div>
+      </div>
+      <div class="simple-list-body" id="ri-list-body">
+        <div class="simple-list-empty" id="ri-list-empty">No received invoices yet.<br>Save invoices in Create Invoice Packet first.</div>
+      </div>
+    </div>
+    <div class="simple-form-panel">
+      <div class="simple-form-title" style="display:flex;align-items:center;justify-content:space-between">
+        <span>Invoice Details</span>
+        <span style="background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.04em">READ-ONLY</span>
+      </div>
+      <div style="display:grid;grid-template-columns:140px 1fr 1fr;gap:16px;padding:18px 18px 0">
+        <div class="simple-field"><label class="simple-label">Serial No.</label><input type="text" class="simple-input" id="ri-serial" readonly placeholder="—"></div>
+        <div class="simple-field"><label class="simple-label">Invoice Number</label><input type="text" class="simple-input" id="ri-number" readonly placeholder="—"></div>
+        <div class="simple-field"><label class="simple-label">Customer Name</label><input type="text" class="simple-input" id="ri-customer" readonly placeholder="—"></div>
+      </div>
+      <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;margin:14px 18px 0;border:1px solid var(--blue-mid);border-radius:6px;">
+        <div style="padding:9px 14px;background:var(--blue-light);border-bottom:1px solid var(--blue-mid);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+          <span style="font-size:13px;font-weight:bold;color:var(--blue);display:flex;align-items:center;gap:7px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>Invoice Lines
+          </span>
+          <span id="ri-line-count" style="font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace">0 lines · 0 QR codes</span>
+        </div>
+        <div style="flex:1;overflow-y:auto">
+          <table style="width:100%;border-collapse:collapse">
+            <thead><tr style="background:var(--surface2);position:sticky;top:0;z-index:1">
+              <th style="padding:9px 14px;text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);width:50px">#</th>
+              <th style="padding:9px 14px;text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border)">Item Name</th>
+              <th style="padding:9px 14px;text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border)">Batch No.</th>
+              <th style="padding:9px 14px;text-align:right;font-size:10.5px;font-weight:600;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);width:60px">Qty</th>
+              <th style="padding:9px 14px;text-align:right;font-size:10.5px;font-weight:600;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);width:80px">QR Codes</th>
+            </tr></thead>
+            <tbody id="ri-lines-tbody">
+              <tr><td colspan="5" style="text-align:center;padding:36px;color:var(--text3);font-size:13px">Select an invoice from the list to view its lines.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="simple-form-footer">
+        <button class="simple-btn" id="ri-load-btn" onclick="riLoad()" style="background:var(--blue-soft);color:var(--blue);border-color:var(--blue-mid)" disabled>Load</button>
+        <button class="simple-btn simple-btn-delete" id="ri-del-btn" onclick="riDelete()" disabled>Delete</button>
+        <button class="simple-btn" id="ri-print-btn" onclick="riPrint()" style="background:var(--blue);color:white;border-color:var(--blue)" disabled>Print Labels</button>
+        <div style="margin-left:auto;font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace" id="ri-meta">No invoice selected</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RECALL BATCH PAGE -->
+<div class="page-view" id="page-recall-batch">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg></div>
+      <div><div class="page-title">Recall Batch</div><div class="page-sub">Search for a batch to view all associated print operations</div></div>
+    </div>
+    <div class="page-breadcrumb">Recall <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Recall Batch</span></div>
+  </div>
+  <div class="recall-wrap">
+    <div class="recall-search-bar">
+      <div class="recall-search-field">
+        <label class="recall-search-label">Batch Number</label>
+        <div class="select-wrap">
+          <select class="recall-search-select" id="recall-batch-select">
+            <option value="">— Select Batch Number —</option>
+          </select>
+        </div>
+      </div>
+      <button class="recall-btn" onclick="recallSearch()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+        Recall
+      </button>
+    </div>
+    <div class="recall-result-panel">
+      <div class="recall-result-header">
+        <div class="recall-result-title" id="recall-result-title">Print History</div>
+        <div class="recall-result-count" id="recall-result-count">Select a batch to search</div>
+      </div>
+      <div class="recall-table-wrap">
+        <table class="recall-table">
+          <thead>
+            <tr>
+              <th style="width:50px">#</th>
+              <th>Customer</th>
+              <th>Batch No.</th>
+              <th>Item Name</th>
+              <th style="width:80px;text-align:center">Qty</th>
+              <th>Invoice No.</th>
+              <th>Print Date / Time</th>
+            </tr>
+          </thead>
+          <tbody id="recall-tbody">
+            <tr><td colspan="7" class="recall-empty">Select a batch number above and click Recall to view print history.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ REPRINT LABEL PAGE — fully functional -->
+<div class="page-view" id="page-reprint">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></div>
+      <div><div class="page-title">Reprint Label</div><div class="page-sub">Select an invoice, then choose which lines and quantities to reprint</div></div>
+    </div>
+    <div class="page-breadcrumb">Adjust Action <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Reprint Label</span></div>
+  </div>
+  <div class="rp-wrap">
+    <!-- Left: Invoice list -->
+    <div class="rp-left">
+      <div class="rp-left-title">
+        <span>Saved Invoices</span>
+        <span id="rp-list-badge" style="background:var(--blue);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;font-family:'JetBrains Mono',monospace">0</span>
+      </div>
+      <div class="rp-left-list" id="rp-left-list">
+        <div class="simple-list-empty" id="rp-left-empty">No saved invoices yet.</div>
+      </div>
+    </div>
+    <!-- Right: Lines table with checkboxes -->
+    <div class="rp-right">
+      <div class="rp-right-header">
+        <div class="rp-right-title" id="rp-right-title">Invoice Lines</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span id="rp-selected-info" style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace">Select an invoice</span>
+        </div>
+      </div>
+      <div class="rp-table-wrap">
+        <table class="rp-table">
+          <thead>
+            <tr>
+              <th style="width:44px;text-align:center">
+                <!-- Select All checkbox -->
+                <input type="checkbox" class="rp-checkbox" id="rp-select-all" onchange="rpToggleAll()" title="Select / deselect all" disabled>
+              </th>
+              <th style="width:40px">#</th>
+              <th>Item Name</th>
+              <th>Batch No.</th>
+              <th style="width:70px;text-align:center">Full Qty</th>
+              <th style="width:130px">Print Mode</th>
+              <th style="width:120px">Qty to Print</th>
+            </tr>
+          </thead>
+          <tbody id="rp-tbody">
+            <tr><td colspan="7" style="text-align:center;padding:48px;color:var(--text3);font-size:13px">Select an invoice from the left panel to view its lines.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="rp-footer">
+        <button class="simple-btn simple-btn-save" id="rp-print-btn" onclick="rpExecutePrint()" disabled style="display:flex;align-items:center;gap:7px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Reprint Selected
+        </button>
+        <div class="rp-footer-meta" id="rp-footer-meta">No lines selected</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Placeholder pages -->
+<div class="page-view" id="page-traceability"><div class="page-header"><div class="page-header-left"><div class="page-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div><div class="page-title">Batch Traceability</div><div class="page-sub">Track batches across the supply chain</div></div></div><div class="page-breadcrumb">Report <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Batch Traceability</span></div></div><div class="placeholder-wrap"><div class="placeholder-box"><div class="placeholder-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="placeholder-title">Batch Traceability</div><div class="placeholder-desc">Search and trace any batch through the full supply chain.</div><span class="placeholder-badge">Requires batch records</span></div></div></div>
+<div class="page-view" id="page-serial-history"><div class="page-header"><div class="page-header-left"><div class="page-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/></svg></div><div><div class="page-title">Serial History Printed</div><div class="page-sub">Report module</div></div></div><div class="page-breadcrumb">Report <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Serial History Printed</span></div></div><div class="placeholder-wrap"><div class="placeholder-box"><div class="placeholder-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/></svg></div><div class="placeholder-title">Serial History Printed</div><div class="placeholder-desc">View the full printing history of serial numbers.</div><span class="placeholder-badge">Under Development</span></div></div></div>
+<div class="page-view" id="page-recall-report"><div class="page-header"><div class="page-header-left"><div class="page-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div><div class="page-title">Recall Report</div><div class="page-sub">Report module</div></div></div><div class="page-breadcrumb">Report <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Recall Report</span></div></div><div class="placeholder-wrap"><div class="placeholder-box"><div class="placeholder-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></div><div class="placeholder-title">Recall Report</div><div class="placeholder-desc">Generate comprehensive recall reports.</div><span class="placeholder-badge">Under Development</span></div></div></div>
+<div class="page-view" id="page-roles"><div class="page-header"><div class="page-header-left"><div class="page-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div><div class="page-title">Roles &amp; Groups</div><div class="page-sub">User Management</div></div></div><div class="page-breadcrumb">User Mgmt <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Roles &amp; Groups</span></div></div><div class="placeholder-wrap"><div class="placeholder-box"><div class="placeholder-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="placeholder-title">Roles &amp; Groups</div><div class="placeholder-desc">Define user roles and permission groups.</div><span class="placeholder-badge">Under Development</span></div></div></div>
+<div class="page-view" id="page-user-file"><div class="page-header"><div class="page-header-left"><div class="page-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div><div class="page-title">User File</div><div class="page-sub">User Management</div></div></div><div class="page-breadcrumb">User Mgmt <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>User File</span></div></div><div class="placeholder-wrap"><div class="placeholder-box"><div class="placeholder-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="placeholder-title">User File</div><div class="placeholder-desc">Manage system users — create, edit, and deactivate accounts.</div><span class="placeholder-badge">Under Development</span></div></div></div>
+<div class="page-view" id="page-change-password">
+  <div class="page-header"><div class="page-header-left"><div class="page-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div><div class="page-title">Change Password</div><div class="page-sub">User Management</div></div></div><div class="page-breadcrumb">User Mgmt <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Change Password</span></div></div>
+  <div class="placeholder-wrap"><div class="placeholder-box" style="max-width:360px"><div class="placeholder-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div class="placeholder-title">Change Password</div><div class="placeholder-desc" style="margin-bottom:20px">Update your account password.</div><div style="display:flex;flex-direction:column;gap:12px;text-align:left"><div class="simple-field"><label class="simple-label">Current Password</label><input type="password" class="simple-input" placeholder="••••••••"></div><div class="simple-field"><label class="simple-label">New Password</label><input type="password" class="simple-input" placeholder="••••••••"></div><div class="simple-field"><label class="simple-label">Confirm New Password</label><input type="password" class="simple-input" placeholder="••••••••"></div><button class="simple-btn simple-btn-save" style="width:100%;margin-top:4px" onclick="showToast('Password updated successfully.','success')">Update Password</button></div></div></div>
+</div>
+
+</main>
+
+<!-- QR PRINT MODAL -->
+<div id="qr-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(10,20,40,.45);z-index:800;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px 0">
+  <div style="background:var(--surface);border:1px solid var(--blue-mid);border-radius:10px;width:680px;max-width:96vw;box-shadow:0 16px 48px rgba(0,50,120,.18);overflow:hidden;margin:auto">
+    <div style="background:var(--blue-light);border-bottom:1px solid var(--blue-mid);padding:13px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:2">
+      <span style="font-size:14px;font-weight:700;color:var(--blue);display:flex;align-items:center;gap:8px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print Invoice QR Codes
+        <span class="qr-real-badge">✅ QR حقيقي</span>
+      </span>
+      <button onclick="closeQrModal()" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;line-height:1;padding:2px 6px;border-radius:4px">✕</button>
+    </div>
+    <div style="padding:16px 20px;background:var(--surface2);border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+      <div><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:3px">Invoice No.</div><div style="font-size:13px;font-weight:500;color:var(--text);font-family:'JetBrains Mono',monospace" id="qr-inv-number">—</div></div>
+      <div><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:3px">Customer</div><div style="font-size:13px;font-weight:500;color:var(--text)" id="qr-customer">—</div></div>
+      <div><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:3px">Total QR Codes</div><div style="font-size:13px;font-weight:600;color:var(--blue);font-family:'JetBrains Mono',monospace" id="qr-total-codes">0</div></div>
+    </div>
+    <div style="padding:16px 20px;max-height:380px;overflow-y:auto" id="qr-lines-list"></div>
+    <div style="padding:14px 20px;display:flex;align-items:center;justify-content:flex-end;gap:10px;border-top:1px solid var(--border);background:var(--surface2)">
+      <button onclick="closeQrModal()" class="simple-btn simple-btn-new">Cancel</button>
+      <button onclick="executePrint()" class="simple-btn simple-btn-save" style="display:flex;align-items:center;gap:7px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print <span id="qr-print-label" style="font-family:'JetBrains Mono',monospace;font-size:11px;background:rgba(255,255,255,.2);padding:1px 6px;border-radius:3px;margin-left:2px">0 QR</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="statusbar">
+  <div class="status-item"><div class="status-dot"></div> System Online</div>
+  <div class="status-sep"></div>
+  <div class="status-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Admin — Full Access</div>
+  <div class="status-sep"></div>
+  <div class="status-item status-page" id="status-page">Overview › Dashboard</div>
+  <div class="status-sep"></div>
+  <div class="status-item status-right" id="clock">--:--:--</div>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+//  QR HELPERS
+// ════════════════════════════════════════════
+function buildUnitQrText(inv, line, unitIndex, totalUnits) {
+  const datePart = new Date().toISOString().slice(0,10).replace(/-/g,'');
+  const uniqueSerial = `${inv.serial}-L${line.lid}-U${String(unitIndex).padStart(4,'0')}`;
+  return [
+    `SN:RX${datePart}${uniqueSerial}`,
+    `INV:${inv.number}`,
+    `ITEM:${line.item}`,
+    `BATCH:${line.batch}`,
+    `UNIT:${unitIndex}/${totalUnits}`,
+    `CUST:${inv.customer}`
+  ].join('|');
+}
+
+function generateRealQR(text, size) {
+  return new Promise((resolve) => {
+    const container = document.createElement('div');
+    container.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:'+size+'px;height:'+size+'px;';
+    document.body.appendChild(container);
+    try {
+      new QRCode(container, {
+        text: text, width: size, height: size,
+        colorDark: '#1a2638', colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+      setTimeout(() => {
+        const canvas = container.querySelector('canvas');
+        if (canvas) { resolve(canvas.toDataURL('image/png')); }
+        else { const img = container.querySelector('img'); resolve(img ? img.src : ''); }
+        document.body.removeChild(container);
+      }, 50);
+    } catch(e) { document.body.removeChild(container); resolve(''); }
+  });
+}
+
+// ════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════
+const state = {
+  customer: { records:[], selected:null, counter:1 },
+  item:     { records:[], selected:null, counter:1 },
+  batch:    { records:[], selected:null, counter:1 },
+};
+let invoicePackets = [];
+let currentInvoice = null;
+let invSerial = 1;
+let invLineCounter = 1;
+let auditLog = [];
+let invSelectedId = null;
+let invEditMode = false;
+let printLog = [];
+
+// ════════════════════════════════════════════
+//  CONFIG
+// ════════════════════════════════════════════
+const cfg = {
+  customer:{ prefix:'C', fields:['serial','name','type'], pid:'c', label:r=>r.name||'(No Name)' },
+  item:    { prefix:'I', fields:['serial','name'],        pid:'i', label:r=>r.name||'(No Name)' },
+  batch:   { prefix:'B', fields:['serial','name','batch','prod','exp'], pid:'b', label:r=>(r.batch||r.name||'(No Record)') },
+};
+const pageLabels = {
+  customer:'Master File › Customer Definition', item:'Master File › Item Definition',
+  batch:'Master File › Batch Definition', dashboard:'Overview › Dashboard',
+  'invoice-packet':'Print Label › Create Invoice Packet',
+  'received-invoice':'Print Label › Received Invoice from System',
+  'recall-batch':'Recall › Recall Batch', traceability:'Report › Batch Traceability',
+  'serial-history':'Report › Serial History Printed', 'recall-report':'Report › Recall Report',
+  reprint:'Adjust Action › Reprint Label', audit:'Audit Trail › All Events',
+  'login-log':'Audit Trail › Login / Logout', roles:'User Mgmt › Roles & Groups',
+  'user-file':'User Mgmt › User File', 'change-password':'User Mgmt › Change Password',
+};
+const sidebarMap = {
+  customer:'sl-customer', item:'sl-item', batch:'sl-batch',
+  dashboard:'sl-dashboard', audit:'sl-audit',
+  'invoice-packet':'sl-invoice-packet',
+  'received-invoice':'sl-received-invoice',
+  'recall-batch':'sl-recall-batch',
+  reprint:'sl-reprint',
+};
+
+// ════════════════════════════════════════════
+//  NAVIGATION
+// ════════════════════════════════════════════
+function navigate(page) {
+  document.querySelectorAll('.tnm-item.open').forEach(x=>x.classList.remove('open'));
+  document.querySelectorAll('.page-view').forEach(v=>v.classList.remove('active'));
+  const target = document.getElementById('page-'+page);
+  if(target) target.classList.add('active');
+  document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
+  if(sidebarMap[page]) document.getElementById(sidebarMap[page]).classList.add('active');
+  document.getElementById('status-page').textContent = pageLabels[page]||page;
+  if(page==='dashboard') updateDashboard();
+  if(page==='audit') renderAuditTable();
+  if(page==='login-log') document.getElementById('login-time').textContent = new Date().toLocaleString();
+  if(page==='invoice-packet' || page==='batch'){ refreshInvoiceDropdowns(); if(page==='invoice-packet') renderInvLeftPanel(); }
+  if(page==='received-invoice') riRefreshList();
+  if(page==='recall-batch') recallRefreshBatchSelect();
+  if(page==='reprint') rpRefresh();
+}
+function toggleMenu(el) {
+  document.querySelectorAll('.tnm-item.open').forEach(x=>{ if(x!==el) x.classList.remove('open'); });
+  el.classList.toggle('open');
+}
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.tnm-item')) document.querySelectorAll('.tnm-item.open').forEach(x=>x.classList.remove('open'));
+});
+
+// ════════════════════════════════════════════
+//  MASTER FILE CRUD
+// ════════════════════════════════════════════
+function getEl(page,field){ return document.getElementById(cfg[page].pid+'-'+field); }
+function getFormData(page){
+  const data={};
+  cfg[page].fields.forEach(f=>{ const el=getEl(page,f); data[f]=el?el.value.trim():''; });
+  return data;
+}
+function fillForm(page,rec){ cfg[page].fields.forEach(f=>{ const el=getEl(page,f); if(el) el.value=rec[f]||''; }); }
+function clearForm(page){
+  const s=state[page];
+  cfg[page].fields.forEach(f=>{
+    const el=getEl(page,f); if(!el) return;
+    el.value = f==='serial' ? (cfg[page].prefix+'-'+s.counter) : '';
+  });
+}
+function setDelBtn(page,enabled){ document.getElementById('del-'+page).disabled=!enabled; }
+
+function newRec(page){ state[page].selected=null; clearForm(page); setDelBtn(page,false); renderList(page); showToast('Form cleared — ready for new entry.','info'); }
+function saveRec(page){
+  const s=state[page];
+  const data=getFormData(page);
+  if(!data.name){ showToast('Name field is required.','error'); return; }
+  if(s.selected!==null){
+    const idx=s.records.findIndex(r=>r.id===s.selected);
+    if(idx!==-1) s.records[idx]={...data,id:s.selected};
+    addAudit('Update',page.charAt(0).toUpperCase()+page.slice(1)+' Definition',data.name);
+    showToast('Record updated successfully.','success');
+  } else {
+    const serial=cfg[page].prefix+'-'+s.counter;
+    data.serial=serial; getEl(page,'serial').value=serial;
+    const rec={...data,id:Date.now()+Math.random()};
+    s.records.push(rec); s.selected=rec.id; s.counter++;
+    setDelBtn(page,true);
+    addAudit('Create',page.charAt(0).toUpperCase()+page.slice(1)+' Definition',rec.name||rec.serial);
+    showToast('Record saved successfully.','success');
+  }
+  renderList(page); refreshInvoiceDropdowns();
+}
+function selectRecord(page,id){
+  state[page].selected=id;
+  const rec=state[page].records.find(r=>r.id===id);
+  if(rec){ fillForm(page,rec); setDelBtn(page,true); renderList(page); }
+}
+function deleteRec(page){
+  const s=state[page];
+  if(s.selected===null) return;
+  const rec=s.records.find(r=>r.id===s.selected);
+  s.records=s.records.filter(r=>r.id!==s.selected);
+  s.selected=null; clearForm(page); setDelBtn(page,false); renderList(page);
+  addAudit('Delete',page.charAt(0).toUpperCase()+page.slice(1)+' Definition',rec?.name||rec?.serial||'Record');
+  showToast(`"${rec?.name||rec?.serial||'Record'}" deleted.`,'error');
+  refreshInvoiceDropdowns();
+}
+function renderList(page){
+  const s=state[page];
+  const container=document.getElementById('list-'+page);
+  container.innerHTML='';
+  if(s.records.length===0){ container.innerHTML='<div class="simple-list-empty">No records yet.</div>'; return; }
+  s.records.forEach(rec=>{
+    const el=document.createElement('div');
+    el.className='simple-list-item'+(rec.id===s.selected?' selected':'');
+    el.textContent=rec.serial+' — '+cfg[page].label(rec);
+    el.onclick=()=>selectRecord(page,rec.id);
+    container.appendChild(el);
+  });
+}
+
+// ════════════════════════════════════════════
+//  INVOICE — READ-ONLY / EDIT MODE
+// ════════════════════════════════════════════
+function setInvEditMode(editable) {
+  invEditMode = editable;
+  const banner   = document.getElementById('inv-readonly-banner');
+  const hint     = document.getElementById('inv-edit-hint');
+  const addRow   = document.getElementById('inv-add-row');
+  const numInput = document.getElementById('inv-number');
+  const custSel  = document.getElementById('inv-customer');
+  const cfgBtn   = document.getElementById('btn-inv-configure');
+
+  if(editable) {
+    banner.classList.add('hidden');
+    hint.classList.remove('hidden');
+    numInput.removeAttribute('disabled');
+    custSel.removeAttribute('disabled');
+    addRow.querySelectorAll('select,input,button').forEach(el=>el.removeAttribute('disabled'));
+    cfgBtn.style.background='var(--green-light)';
+    cfgBtn.style.color='var(--green)';
+    cfgBtn.style.borderColor='#a0d8b8';
+    cfgBtn.title='Currently editing — click to lock';
+  } else {
+    if(currentInvoice && currentInvoice.id) {
+      banner.classList.remove('hidden');
+    } else {
+      banner.classList.add('hidden');
+    }
+    hint.classList.add('hidden');
+    numInput.setAttribute('disabled','');
+    custSel.setAttribute('disabled','');
+    addRow.querySelectorAll('select,input,button').forEach(el=>el.setAttribute('disabled',''));
+    cfgBtn.style.background='var(--orange-light)';
+    cfgBtn.style.color='var(--orange)';
+    cfgBtn.style.borderColor='#f0c080';
+    cfgBtn.title='Click to enable editing';
+  }
+  if(currentInvoice) renderInvGrid();
+}
+
+function invConfigure() {
+  if(!currentInvoice || !currentInvoice.id) {
+    showToast('Save the invoice first before configuring.','error');
+    return;
+  }
+  if(invEditMode) {
+    setInvEditMode(false);
+    showToast('Invoice locked. Edit mode disabled.','info');
+  } else {
+    setInvEditMode(true);
+    showToast('Edit mode enabled. You can now modify this invoice.','success');
+  }
+}
+
+// ════════════════════════════════════════════
+//  INVOICE — LEFT PANEL
+// ════════════════════════════════════════════
+function renderInvLeftPanel(){
+  const list=document.getElementById('inv-left-list');
+  const empty=document.getElementById('inv-left-empty');
+  const badge=document.getElementById('inv-list-badge');
+  badge.textContent=invoicePackets.length;
+  list.querySelectorAll('.inv-list-item').forEach(e=>e.remove());
+  if(invoicePackets.length===0){ empty.style.display=''; return; }
+  empty.style.display='none';
+  invoicePackets.forEach(inv=>{
+    const totalQr=inv.lines.reduce((s,l)=>s+(l.qty||1),0);
+    const el=document.createElement('div');
+    el.className='inv-list-item'+(inv.id===invSelectedId?' selected':'');
+    el.innerHTML=`<div class="inv-list-num">${inv.number||inv.serial}</div>
+      <div class="inv-list-sub">${inv.customer||'—'} · ${inv.lines.length} line${inv.lines.length!==1?'s':''} · ${totalQr} QR</div>`;
+    el.onclick=()=>invSelectFromList(inv.id);
+    list.appendChild(el);
+  });
+}
+
+function invSelectFromList(id){
+  invSelectedId=id;
+  const inv=invoicePackets.find(i=>i.id===id);
+  if(!inv) return;
+  currentInvoice=JSON.parse(JSON.stringify(inv));
+  document.getElementById('inv-serial').value=inv.serial;
+  document.getElementById('inv-number').value=inv.number;
+  document.getElementById('inv-customer').value=inv.customer;
+  setInvEditMode(false);
+  renderInvGrid();
+  updateInvFooter();
+  renderInvLeftPanel();
+}
+
+// ════════════════════════════════════════════
+//  INVOICE — DROPDOWNS
+// ════════════════════════════════════════════
+function refreshInvoiceDropdowns(){
+  const custSel=document.getElementById('inv-customer');
+  const custVal=custSel.value;
+  custSel.innerHTML='<option value="">— Select Customer —</option>';
+  state.customer.records.forEach(r=>{
+    const opt=document.createElement('option');
+    opt.value=r.name; opt.textContent=r.serial+' — '+r.name;
+    custSel.appendChild(opt);
+  });
+  custSel.value=custVal;
+
+  const itemSel=document.getElementById('add-item');
+  const itemVal=itemSel.value;
+  itemSel.innerHTML='<option value="">— Select Item —</option>';
+  state.item.records.forEach(r=>{
+    const opt=document.createElement('option');
+    opt.value=r.name; opt.textContent=r.name;
+    itemSel.appendChild(opt);
+  });
+  itemSel.value=itemVal;
+
+  const batchItemSel=document.getElementById('b-name');
+  if(batchItemSel){
+    const bVal=batchItemSel.value;
+    batchItemSel.innerHTML='<option value="">— Select Item —</option>';
+    state.item.records.forEach(r=>{
+      const opt=document.createElement('option');
+      opt.value=r.name; opt.textContent=r.name;
+      batchItemSel.appendChild(opt);
+    });
+    batchItemSel.value=bVal;
+  }
+  refreshBatchDropdown();
+}
+
+document.addEventListener('change',e=>{
+  if(e.target.id==='add-item') refreshBatchDropdown();
+});
+
+function refreshBatchDropdown(){
+  const itemName=document.getElementById('add-item').value;
+  const batchSel=document.getElementById('add-batch');
+  const batchVal=batchSel.value;
+  batchSel.innerHTML='<option value="">— Select Batch —</option>';
+  const filtered=itemName?state.batch.records.filter(r=>r.name===itemName):state.batch.records;
+  filtered.forEach(r=>{
+    const opt=document.createElement('option');
+    opt.value=r.batch||r.serial; opt.textContent=r.batch||r.serial;
+    batchSel.appendChild(opt);
+  });
+  batchSel.value=batchVal;
+}
+
+// ════════════════════════════════════════════
+//  INVOICE — INLINE EDITING
+// ════════════════════════════════════════════
+let editingLid = null;
+
+function startInlineEdit(lid) {
+  if(!invEditMode) return;
+  if(editingLid === lid) return;
+  if(editingLid !== null) cancelInlineEdit();
+  if(!currentInvoice) return;
+  const line = currentInvoice.lines.find(l=>l.lid===lid);
+  if(!line) return;
+  editingLid = lid;
+  const row = document.getElementById('inv-row-'+lid);
+  if(!row) return;
+  row.classList.add('editing-row');
+  let itemOpts = state.item.records.map(r=>
+    `<option value="${escHtml(r.name)}"${r.name===line.item?' selected':''}>${escHtml(r.name)}</option>`
+  ).join('');
+  const batchesForItem = line.item ? state.batch.records.filter(r=>r.name===line.item) : state.batch.records;
+  let batchOpts = batchesForItem.map(r=>{
+    const val = r.batch||r.serial;
+    return `<option value="${escHtml(val)}"${val===line.batch?' selected':''}>${escHtml(val)}</option>`;
+  }).join('');
+  row.innerHTML = `
+    <td class="td-id" style="color:var(--orange)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;color:var(--orange)"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    </td>
+    <td><select class="inline-select" id="ie-item-${lid}" onchange="ieItemChanged(${lid})"><option value="">— Select Item —</option>${itemOpts}</select></td>
+    <td><select class="inline-select" id="ie-batch-${lid}"><option value="">— Select Batch —</option>${batchOpts}</select></td>
+    <td style="text-align:center"><input type="number" class="inline-input" id="ie-qty-${lid}" value="${line.qty||1}" min="1" max="9999"></td>
+    <td style="text-align:center"><div class="inline-actions"><button class="inline-save-btn" onclick="saveInlineEdit(${lid})">Save</button><button class="inline-cancel-btn" onclick="cancelInlineEdit()">✕</button></div></td>
+    <td class="td-del"><button class="del-row-btn" onclick="removeInvLine(${lid})" title="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></td>`;
+}
+
+function ieItemChanged(lid) {
+  const itemSel = document.getElementById('ie-item-'+lid);
+  const batchSel = document.getElementById('ie-batch-'+lid);
+  if(!itemSel||!batchSel) return;
+  const itemName = itemSel.value;
+  const filtered = itemName ? state.batch.records.filter(r=>r.name===itemName) : state.batch.records;
+  batchSel.innerHTML = '<option value="">— Select Batch —</option>' +
+    filtered.map(r=>{ const val=r.batch||r.serial; return `<option value="${escHtml(val)}">${escHtml(val)}</option>`; }).join('');
+}
+
+function saveInlineEdit(lid) {
+  if(!currentInvoice) return;
+  const itemSel=document.getElementById('ie-item-'+lid);
+  const batchSel=document.getElementById('ie-batch-'+lid);
+  const qtyInput=document.getElementById('ie-qty-'+lid);
+  if(!itemSel||!batchSel||!qtyInput) return;
+  const item=itemSel.value, batch=batchSel.value, qty=Math.max(1,parseInt(qtyInput.value)||1);
+  if(!item){ showToast('Please select an item.','error'); return; }
+  if(!batch){ showToast('Please select a batch.','error'); return; }
+  const line=currentInvoice.lines.find(l=>l.lid===lid);
+  if(line){ line.item=item; line.batch=batch; line.qty=qty; }
+  editingLid=null;
+  renderInvGrid();
+  showToast('Line updated.','success');
+}
+
+function cancelInlineEdit() { editingLid=null; renderInvGrid(); }
+
+function escHtml(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ════════════════════════════════════════════
+//  INVOICE — LINE OPERATIONS
+// ════════════════════════════════════════════
+function addInvLine(){
+  if(!invEditMode && currentInvoice && currentInvoice.id) {
+    showToast('Click Configure to enable editing first.','error'); return;
+  }
+  const itemName=document.getElementById('add-item').value;
+  const batchNum=document.getElementById('add-batch').value;
+  const qty=Math.max(1,parseInt(document.getElementById('add-qty').value)||1);
+  if(!itemName){ showToast('Please select an item.','error'); return; }
+  if(!batchNum){ showToast('Please select a batch number.','error'); return; }
+  if(!currentInvoice) currentInvoice={id:null,serial:'IC-'+invSerial,number:'',customer:'',lines:[]};
+  currentInvoice.lines.push({lid:invLineCounter++,item:itemName,batch:batchNum,qty});
+  renderInvGrid();
+  document.getElementById('add-item').value='';
+  document.getElementById('add-batch').innerHTML='<option value="">— Select Batch —</option>';
+  document.getElementById('add-qty').value='1';
+  showToast('Line added.','success');
+}
+
+function removeInvLine(lid){
+  if(!invEditMode && currentInvoice && currentInvoice.id) return;
+  if(!currentInvoice) return;
+  if(editingLid===lid) editingLid=null;
+  currentInvoice.lines=currentInvoice.lines.filter(l=>l.lid!==lid);
+  renderInvGrid();
+}
+
+function renderInvGrid(){
+  const tbody=document.getElementById('inv-tbody');
+  const lines=currentInvoice?currentInvoice.lines:[];
+  const totalQr=lines.reduce((s,l)=>s+(l.qty||1),0);
+  document.getElementById('inv-row-count').textContent=
+    lines.length+(lines.length===1?' line':' lines')+' · '+totalQr+' QR codes';
+  if(lines.length===0){
+    editingLid=null;
+    tbody.innerHTML='<tr id="inv-empty-row"><td colspan="6" class="inv-empty">No lines yet. Use the bar above to add items.</td></tr>';
+    updateInvFooter(); return;
+  }
+  const canEdit = invEditMode || !(currentInvoice && currentInvoice.id);
+  tbody.innerHTML=lines.map((l,i)=>`
+    <tr id="inv-row-${l.lid}" onclick="${canEdit?'startInlineEdit('+l.lid+')':''}" style="cursor:${canEdit?'pointer':'default'}" title="${canEdit?'Click to edit this line':'Configure to edit'}">
+      <td class="td-id">${i+1}</td>
+      <td>${escHtml(l.item)}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${escHtml(l.batch)}</td>
+      <td style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px">${l.qty||1}</td>
+      <td style="text-align:center"><span style="background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:600;padding:2px 8px;border-radius:3px;font-family:'JetBrains Mono',monospace">${l.qty||1} QR</span></td>
+      <td class="td-del">
+        <button class="del-row-btn" ${canEdit?'':'disabled'} onclick="event.stopPropagation();removeInvLine(${l.lid})" title="${canEdit?'Remove':'Configure to remove'}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        </button>
+      </td>
+    </tr>`).join('');
+  if(editingLid !== null) {
+    const stillExists=lines.find(l=>l.lid===editingLid);
+    if(stillExists && canEdit) startInlineEdit(editingLid);
+  }
+  updateInvFooter();
+}
+
+function updateInvFooter(){
+  const hasSavedInv=currentInvoice&&currentInvoice.id;
+  const hasLines=currentInvoice&&currentInvoice.lines&&currentInvoice.lines.length>0;
+  document.getElementById('del-invoice').disabled=!hasSavedInv;
+  document.getElementById('btn-inv-print').disabled=!(hasSavedInv&&hasLines);
+  document.getElementById('btn-inv-configure').disabled=!hasSavedInv;
+  if(hasSavedInv){
+    const totalQr=currentInvoice.lines.reduce((s,l)=>s+(l.qty||1),0);
+    document.getElementById('inv-meta').textContent=currentInvoice.serial+' · '+currentInvoice.lines.length+' lines · '+totalQr+' QR codes';
+  } else {
+    document.getElementById('inv-meta').textContent=currentInvoice?'Unsaved draft':'No invoice loaded';
+  }
+}
+
+// ════════════════════════════════════════════
+//  INVOICE — SAVE / NEW / DELETE
+// ════════════════════════════════════════════
+function invNew(){
+  currentInvoice=null; invSelectedId=null; editingLid=null;
+  document.getElementById('inv-serial').value='IC-'+invSerial;
+  document.getElementById('inv-number').value='';
+  document.getElementById('inv-customer').value='';
+  document.getElementById('add-item').value='';
+  document.getElementById('add-batch').innerHTML='<option value="">— Select Batch —</option>';
+  invEditMode=true;
+  setInvEditMode(true);
+  renderInvGrid(); renderInvLeftPanel();
+  showToast('Form cleared — ready for new invoice.','info');
+}
+
+function invSave(){
+  const number=document.getElementById('inv-number').value.trim();
+  const customer=document.getElementById('inv-customer').value;
+  if(!number){ showToast('Invoice number is required.','error'); return; }
+  if(!customer){ showToast('Please select a customer.','error'); return; }
+  const isDuplicate=invoicePackets.some(i=>i.number===number&&(!currentInvoice||i.id!==currentInvoice.id));
+  if(isDuplicate){ showToast('Invoice number "'+number+'" already exists.','error'); return; }
+  if(!currentInvoice) currentInvoice={id:null,serial:'',number:'',customer:'',lines:[]};
+  const isNew=!currentInvoice.id;
+  if(isNew){
+    currentInvoice.id=Date.now()+Math.random();
+    currentInvoice.serial='IC-'+invSerial;
+    document.getElementById('inv-serial').value=currentInvoice.serial;
+    invSerial++;
+    invoicePackets.push(currentInvoice);
+  } else {
+    const idx=invoicePackets.findIndex(i=>i.id===currentInvoice.id);
+    if(idx!==-1) invoicePackets[idx]=currentInvoice;
+  }
+  currentInvoice.number=number;
+  currentInvoice.customer=customer;
+  invSelectedId=currentInvoice.id;
+  setInvEditMode(false);
+  addAudit(isNew?'Create':'Update','Invoice Packet',number+' / '+customer);
+  showToast('Invoice saved. Locked to read-only. Use Configure to edit.','success');
+  updateInvFooter(); renderInvLeftPanel(); riRefreshList();
+}
+
+function invDelete(){
+  if(!currentInvoice||!currentInvoice.id){ showToast('No saved invoice to delete.','error'); return; }
+  const label=currentInvoice.number||currentInvoice.serial;
+  invoicePackets=invoicePackets.filter(inv=>inv.id!==currentInvoice.id);
+  addAudit('Delete','Invoice Packet',label);
+  invNew(); riRefreshList();
+  showToast(`Invoice "${label}" deleted.`,'error');
+}
+
+// ════════════════════════════════════════════
+//  QR PRINT MODAL
+// ════════════════════════════════════════════
+let qrPrintInvoice = null;
+
+function invPrint(){
+  if(!currentInvoice||!currentInvoice.id||!currentInvoice.lines.length) return;
+  openQrModal(currentInvoice);
+}
+function riPrint(){
+  if(!riSelected) return;
+  const inv=invoicePackets.find(i=>i.id===riSelected);
+  if(!inv||!inv.lines.length) return;
+  openQrModal(inv);
+}
+
+async function openQrModal(inv) {
+  qrPrintInvoice = inv;
+  const totalQr = inv.lines.reduce((s,l)=>s+(l.qty||1),0);
+  document.getElementById('qr-inv-number').textContent = inv.number||'—';
+  document.getElementById('qr-customer').textContent = inv.customer||'—';
+  document.getElementById('qr-total-codes').textContent = totalQr + ' codes';
+  updatePrintLabel(totalQr);
+
+  const list = document.getElementById('qr-lines-list');
+  list.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text3);font-size:13px">⏳ Generating real QR codes…</div>';
+  document.getElementById('qr-modal-overlay').style.display = 'flex';
+
+  list.innerHTML = '';
+  for (let idx = 0; idx < inv.lines.length; idx++) {
+    const l = inv.lines[idx];
+    const totalUnits = l.qty || 1;
+    const qrText = buildUnitQrText(inv, l, 1, totalUnits);
+    const qrDataUrl = await generateRealQR(qrText, 80);
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--border)';
+    row.innerHTML = `
+      <img src="${qrDataUrl}" width="64" height="64" style="border:1px solid var(--blue-mid);border-radius:4px;flex-shrink:0;image-rendering:pixelated" title="QR حقيقي">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;color:var(--text)">${escHtml(l.item)}</div>
+        <div style="font-size:11.5px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-top:1px">${escHtml(l.batch)}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:3px;word-break:break-all">${escHtml(qrText.slice(0,60))}…</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:12px;color:var(--text2)">Qty: <strong>${totalUnits}</strong></div>
+        <div style="background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:600;padding:2px 8px;border-radius:3px;font-family:'JetBrains Mono',monospace;margin-top:3px">${totalUnits} unique QRs</div>
+        <div style="background:var(--green-light);color:var(--green);font-size:10px;font-weight:600;padding:1px 6px;border-radius:3px;margin-top:3px">✅ Scannable</div>
+      </div>`;
+    list.appendChild(row);
+  }
+}
+
+function closeQrModal(){ document.getElementById('qr-modal-overlay').style.display='none'; qrPrintInvoice=null; }
+
+function updatePrintLabel(total){
+  const t = total !== undefined ? total : (qrPrintInvoice ? qrPrintInvoice.lines.reduce((s,l)=>s+(l.qty||1),0) : 0);
+  document.getElementById('qr-print-label').textContent = t + ' QR';
+}
+
+// ════════════════════════════════════════════
+//  EXECUTE PRINT — LARGER CARDS (A4, 2 per row)
+// ════════════════════════════════════════════
+async function executePrint(customLines, invoiceRef) {
+  const inv = invoiceRef || qrPrintInvoice;
+  if(!inv) return;
+
+  const printNow = new Date();
+  const printDateStr = printNow.toLocaleDateString('en-GB', {day:'2-digit',month:'2-digit',year:'numeric'});
+  const printTimeStr = printNow.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const printDateTime = `${printDateStr} ${printTimeStr}`;
+
+  const linesToPrint = customLines || inv.lines;
+  showToast('⏳ Generating unique QR codes for each unit…', 'info');
+
+  const cards = [];
+  for (const line of linesToPrint) {
+    const qty = line.qty || 1;
+    for (let unitIdx = 1; unitIdx <= qty; unitIdx++) {
+      const qrText = buildUnitQrText(inv, line, unitIdx, qty);
+      const qrDataUrl = await generateRealQR(qrText, 216); // 108px * 2x for crispness
+      cards.push({
+        qrDataUrl, qrText,
+        number: inv.number||'—', customer: inv.customer||'—',
+        item: line.item, batch: line.batch, qty, unitNo: unitIdx,
+        printDateTime
+      });
+    }
+  }
+
+  const totalCards = cards.length;
+  const win = window.open('', '_blank');
+  if(!win){ showToast('Popup blocked. Allow popups to print.','error'); return; }
+
+  // 3×8 = 24 labels per A4 page, QR and text as large as possible within each cell
+  const cardHtml = cards.map((cd, i) => `
+    <div class="card">
+      <div class="qr-block">
+        <img src="${cd.qrDataUrl}" class="qr-img" alt="QR-${cd.unitNo}">
+        <div class="qr-dt">${cd.printDateTime}</div>
+      </div>
+      <div class="info">
+        <div class="inv-line"><span class="inv-num">${cd.number}</span></div>
+        <div class="row"><span class="lbl">Cust</span><span class="val">${cd.customer}</span></div>
+        <div class="row"><span class="lbl">Item</span><span class="val">${cd.item}</span></div>
+        <div class="row"><span class="lbl">Batch</span><span class="val mono">${cd.batch}</span></div>
+        <div class="row"><span class="lbl">Unit</span><span class="val mono">${cd.unitNo}/${cd.qty}</span></div>
+        <div class="seqno">#${i+1}/${totalCards}</div>
+      </div>
+    </div>`).join('');
+
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Print — ${inv.number}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:sans-serif;background:#fff;}
+    /* 3 cols × 8 rows = 24 per A4 page, zero page margin to maximise card size */
+    .grid{display:grid;grid-template-columns:repeat(3,70mm);grid-template-rows:repeat(8,37mm);width:210mm;margin:0 auto;}
+    .card{display:flex;align-items:center;gap:6px;border:0.4px solid #b8cce4;padding:3px 5px 3px 4px;width:70mm;height:37mm;page-break-inside:avoid;overflow:hidden;}
+    .card:nth-child(24n){page-break-after:always;}
+    .qr-block{display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
+    /* QR as big as possible: 37mm card height - borders - date line ≈ 30mm = ~113px at 96dpi, use 108px to be safe */
+    .qr-img{width:108px;height:108px;image-rendering:pixelated;}
+    .qr-dt{font-family:monospace;font-size:6.5px;color:#7a9ab0;margin-top:2px;text-align:center;white-space:nowrap;line-height:1;}
+    .info{flex:1;overflow:hidden;min-width:0;}
+    .inv-line{margin-bottom:3px;}
+    .inv-num{font-family:monospace;font-size:9px;font-weight:700;color:#0062cc;background:#e8f1fb;padding:1px 5px;border-radius:2px;display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .row{display:flex;justify-content:space-between;align-items:baseline;font-size:8px;margin-bottom:2px;gap:4px;line-height:1.2;}
+    .lbl{color:#7a9ab0;font-weight:700;text-transform:uppercase;letter-spacing:.03em;flex-shrink:0;font-size:7px;}
+    .val{color:#1a2638;font-weight:600;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80px;}
+    .mono{font-family:monospace;}
+    .seqno{font-size:6px;color:#bbb;margin-top:2px;text-align:right;}
+    @page{size:A4 portrait;margin:0;}
+    @media print{body{margin:0;}}
+  </style></head><body>
+  <div class="grid">${cardHtml}</div>
+  <script>window.onload=()=>{window.print();window.close()}<\/script>
+  </body></html>`);
+  win.document.close();
+
+  // Log print
+  linesToPrint.forEach(line => {
+    printLog.push({
+      batchNo:       line.batch,
+      customer:      inv.customer,
+      item:          line.item,
+      qty:           line.qty || 1,
+      invoiceNumber: inv.number,
+      invoiceSerial: inv.serial,
+      printDateTime: printDateTime,
+      printTime:     printNow.getTime()
+    });
+  });
+
+  const totalQr = linesToPrint.reduce((s,l)=>s+(l.qty||1),0);
+  addAudit('Print','Invoice Packet', inv.number+' — '+totalQr+' QR = '+totalCards+' labels');
+  showToast('✅ Printing '+totalCards+' labels with unique QR codes…','success');
+  closeQrModal();
+}
+
+// ════════════════════════════════════════════
+//  REPRINT LABEL PAGE
+// ════════════════════════════════════════════
+let rpSelectedInvId = null;
+
+function rpRefresh() {
+  const listEl = document.getElementById('rp-left-list');
+  const emptyEl = document.getElementById('rp-left-empty');
+  const badge = document.getElementById('rp-list-badge');
+  badge.textContent = invoicePackets.length;
+  listEl.querySelectorAll('.rp-inv-item').forEach(e=>e.remove());
+  if(invoicePackets.length === 0) { emptyEl.style.display=''; return; }
+  emptyEl.style.display = 'none';
+  invoicePackets.forEach(inv => {
+    const totalQr = inv.lines.reduce((s,l)=>s+(l.qty||1),0);
+    const el = document.createElement('div');
+    el.className = 'rp-inv-item' + (inv.id===rpSelectedInvId?' selected':'');
+    el.innerHTML = `<div class="rp-inv-num">${escHtml(inv.number||inv.serial)}</div>
+      <div class="rp-inv-sub">${escHtml(inv.customer||'—')} · ${inv.lines.length} lines · ${totalQr} QR</div>`;
+    el.onclick = () => rpSelectInvoice(inv.id);
+    listEl.appendChild(el);
+  });
+  if(rpSelectedInvId) rpRenderLines();
+}
+
+function rpSelectInvoice(id) {
+  rpSelectedInvId = id;
+  rpRefresh();
+  rpRenderLines();
+}
+
+function rpRenderLines() {
+  const inv = invoicePackets.find(i=>i.id===rpSelectedInvId);
+  const tbody = document.getElementById('rp-tbody');
+  const selAll = document.getElementById('rp-select-all');
+  const titleEl = document.getElementById('rp-right-title');
+  const infoEl = document.getElementById('rp-selected-info');
+  const printBtn = document.getElementById('rp-print-btn');
+
+  if(!inv) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:48px;color:var(--text3);font-size:13px">Select an invoice from the left panel.</td></tr>';
+    selAll.disabled = true; printBtn.disabled = true;
+    document.getElementById('rp-footer-meta').textContent = 'No lines selected';
+    return;
+  }
+
+  titleEl.textContent = 'Invoice Lines — ' + inv.number;
+  selAll.disabled = false;
+
+  if(inv.lines.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:48px;color:var(--text3);font-size:13px">This invoice has no lines.</td></tr>';
+    selAll.disabled = true; printBtn.disabled = true;
+    infoEl.textContent = '0 lines';
+    document.getElementById('rp-footer-meta').textContent = 'No lines selected';
+    return;
+  }
+
+  tbody.innerHTML = inv.lines.map((l, i) => {
+    const maxQty = l.qty || 1;
+    // Build qty options 1..maxQty
+    let qtyOpts = '';
+    for(let q=1;q<=maxQty;q++) qtyOpts += `<option value="${q}"${q===maxQty?' selected':''}>${q}</option>`;
+    return `<tr id="rp-row-${l.lid}">
+      <td style="text-align:center">
+        <input type="checkbox" class="rp-checkbox" id="rp-chk-${l.lid}" onchange="rpOnCheck(${l.lid},${maxQty})">
+      </td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text3)">${i+1}</td>
+      <td>${escHtml(l.item)}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${escHtml(l.batch)}</td>
+      <td style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600">${maxQty}</td>
+      <td id="rp-mode-${l.lid}" style="font-size:12px;color:var(--text3)">—</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="select-wrap" style="min-width:70px;position:relative">
+            <select class="rp-qty-select" id="rp-qty-${l.lid}" disabled onchange="rpUpdateFooter()">
+              ${qtyOpts}
+            </select>
+            <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:9px;color:var(--text3)">▾</span>
+          </div>
+          <span style="font-size:11px;color:var(--text3)">/ ${maxQty}</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  rpUpdateFooter();
+}
+
+function rpOnCheck(lid, maxQty) {
+  const chk = document.getElementById('rp-chk-'+lid);
+  const qtySel = document.getElementById('rp-qty-'+lid);
+  const modeEl = document.getElementById('rp-mode-'+lid);
+  if(chk.checked) {
+    qtySel.disabled = false;
+    // If ALL qty selected → show "All QR Codes"; else custom
+    rpSetMode(lid, maxQty);
+  } else {
+    qtySel.disabled = true;
+    qtySel.value = maxQty; // reset to full
+    if(modeEl) modeEl.innerHTML = '—';
+  }
+  rpSyncSelectAll();
+  rpUpdateFooter();
+}
+
+function rpSetMode(lid, maxQty) {
+  const qtySel = document.getElementById('rp-qty-'+lid);
+  const modeEl = document.getElementById('rp-mode-'+lid);
+  if(!qtySel || !modeEl) return;
+  const chosen = parseInt(qtySel.value)||1;
+  if(chosen === maxQty) {
+    modeEl.innerHTML = '<span style="background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:600;padding:2px 8px;border-radius:3px">All QR Codes</span>';
+  } else {
+    modeEl.innerHTML = '<span style="background:var(--orange-light);color:var(--orange);font-size:11px;font-weight:600;padding:2px 8px;border-radius:3px">Custom</span>';
+  }
+}
+
+// Listen for qty changes to update mode label
+document.addEventListener('change', e => {
+  if(e.target && e.target.id && e.target.id.startsWith('rp-qty-')) {
+    const lid = parseInt(e.target.id.replace('rp-qty-',''));
+    const inv = invoicePackets.find(i=>i.id===rpSelectedInvId);
+    if(!inv) return;
+    const line = inv.lines.find(l=>l.lid===lid);
+    if(!line) return;
+    rpSetMode(lid, line.qty||1);
+    rpUpdateFooter();
+  }
+});
+
+function rpToggleAll() {
+  const selAll = document.getElementById('rp-select-all');
+  const inv = invoicePackets.find(i=>i.id===rpSelectedInvId);
+  if(!inv) return;
+  inv.lines.forEach(l => {
+    const chk = document.getElementById('rp-chk-'+l.lid);
+    const qtySel = document.getElementById('rp-qty-'+l.lid);
+    const modeEl = document.getElementById('rp-mode-'+l.lid);
+    if(!chk) return;
+    chk.checked = selAll.checked;
+    if(selAll.checked) {
+      qtySel.disabled = false;
+      rpSetMode(l.lid, l.qty||1);
+    } else {
+      qtySel.disabled = true;
+      if(modeEl) modeEl.innerHTML = '—';
+    }
+  });
+  rpUpdateFooter();
+}
+
+function rpSyncSelectAll() {
+  const inv = invoicePackets.find(i=>i.id===rpSelectedInvId);
+  if(!inv) return;
+  const selAll = document.getElementById('rp-select-all');
+  const allChecked = inv.lines.every(l => {
+    const chk = document.getElementById('rp-chk-'+l.lid);
+    return chk && chk.checked;
+  });
+  selAll.checked = allChecked;
+}
+
+function rpUpdateFooter() {
+  const inv = invoicePackets.find(i=>i.id===rpSelectedInvId);
+  const printBtn = document.getElementById('rp-print-btn');
+  const footerMeta = document.getElementById('rp-footer-meta');
+  const infoEl = document.getElementById('rp-selected-info');
+  if(!inv) { printBtn.disabled=true; footerMeta.textContent='No lines selected'; return; }
+
+  let selectedCount = 0, totalQr = 0;
+  inv.lines.forEach(l => {
+    const chk = document.getElementById('rp-chk-'+l.lid);
+    const qtySel = document.getElementById('rp-qty-'+l.lid);
+    if(chk && chk.checked) {
+      selectedCount++;
+      totalQr += parseInt(qtySel ? qtySel.value : l.qty)||1;
+    }
+  });
+
+  if(selectedCount === 0) {
+    printBtn.disabled = true;
+    footerMeta.textContent = 'No lines selected';
+    infoEl.textContent = inv.lines.length + ' lines available';
+  } else {
+    printBtn.disabled = false;
+    footerMeta.textContent = selectedCount + ' line' + (selectedCount!==1?'s':'') + ' selected · ' + totalQr + ' QR codes to reprint';
+    infoEl.textContent = selectedCount + '/' + inv.lines.length + ' lines selected · ' + totalQr + ' QR codes';
+  }
+}
+
+async function rpExecutePrint() {
+  const inv = invoicePackets.find(i=>i.id===rpSelectedInvId);
+  if(!inv) return;
+
+  // Collect selected lines with custom qty
+  const linesToPrint = [];
+  inv.lines.forEach(l => {
+    const chk = document.getElementById('rp-chk-'+l.lid);
+    const qtySel = document.getElementById('rp-qty-'+l.lid);
+    if(chk && chk.checked) {
+      const qty = parseInt(qtySel ? qtySel.value : l.qty)||1;
+      linesToPrint.push({ ...l, qty });
+    }
+  });
+
+  if(linesToPrint.length === 0) {
+    showToast('Please select at least one line to reprint.','error');
+    return;
+  }
+
+  await executePrint(linesToPrint, inv);
+  addAudit('Reprint','Reprint Label', inv.number + ' — ' + linesToPrint.length + ' lines');
+}
+
+// ════════════════════════════════════════════
+//  RECALL BATCH PAGE
+// ════════════════════════════════════════════
+function recallRefreshBatchSelect() {
+  const sel = document.getElementById('recall-batch-select');
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">— Select Batch Number —</option>';
+  const batchSet = new Set();
+  state.batch.records.forEach(r => { if(r.batch) batchSet.add(r.batch); });
+  printLog.forEach(p => { if(p.batchNo) batchSet.add(p.batchNo); });
+  [...batchSet].sort().forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = b; opt.textContent = b;
+    sel.appendChild(opt);
+  });
+  if([...batchSet].includes(prev)) sel.value = prev;
+}
+
+function recallSearch() {
+  const batchNo = document.getElementById('recall-batch-select').value;
+  const tbody   = document.getElementById('recall-tbody');
+  const title   = document.getElementById('recall-result-title');
+  const count   = document.getElementById('recall-result-count');
+  if(!batchNo) { showToast('Please select a batch number first.','error'); return; }
+  const results = printLog.filter(p => p.batchNo === batchNo);
+  title.textContent = 'Print History — Batch: ' + batchNo;
+  if(results.length === 0) {
+    count.textContent = '0 records found';
+    tbody.innerHTML = '<tr><td colspan="7" class="recall-empty">No print operations found for batch <strong>'+escHtml(batchNo)+'</strong>.</td></tr>';
+    return;
+  }
+  count.textContent = results.length + ' record' + (results.length!==1?'s':'') + ' found';
+  tbody.innerHTML = results.map((r, i) => `
+    <tr>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text3)">${i+1}</td>
+      <td>${escHtml(r.customer)}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px">
+        <span style="background:var(--blue-light);color:var(--blue);padding:2px 8px;border-radius:3px;font-size:11.5px;font-weight:600">${escHtml(r.batchNo)}</span>
+      </td>
+      <td>${escHtml(r.item)}</td>
+      <td style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600">${r.qty}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${escHtml(r.invoiceNumber)}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text3)">${escHtml(r.printDateTime)}</td>
+    </tr>`).join('');
+}
+
+// ════════════════════════════════════════════
+//  RECEIVED INVOICE
+// ════════════════════════════════════════════
+let riSelected=null;
+function riRefreshList(filter){
+  const body=document.getElementById('ri-list-body');
+  const empty=document.getElementById('ri-list-empty');
+  const countEl=document.getElementById('ri-list-count');
+  const q=(filter!==undefined?filter:(document.getElementById('ri-search')||{}).value||'').toLowerCase();
+  body.querySelectorAll('.simple-list-item').forEach(el=>el.remove());
+  body.querySelectorAll('#ri-no-results').forEach(e=>e.remove());
+  countEl.textContent=invoicePackets.length;
+  const filtered=invoicePackets.filter(inv=>
+    !q||inv.number.toLowerCase().includes(q)||inv.customer.toLowerCase().includes(q)||inv.serial.toLowerCase().includes(q));
+  if(invoicePackets.length===0){ empty.style.display=''; return; }
+  empty.style.display='none';
+  if(filtered.length===0){
+    const noRes=document.createElement('div');
+    noRes.className='simple-list-empty'; noRes.id='ri-no-results';
+    noRes.textContent='No matching invoices.'; body.appendChild(noRes); return;
+  }
+  filtered.forEach(inv=>{
+    const totalQr=inv.lines.reduce((s,l)=>s+(l.qty||1),0);
+    const el=document.createElement('div');
+    el.className='simple-list-item'+(inv.id===riSelected?' selected':'');
+    el.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <div><div style="font-weight:500;font-size:13px">${escHtml(inv.number||inv.serial)}</div>
+      <div style="font-size:11.5px;color:var(--text3);margin-top:2px">${escHtml(inv.customer||'—')} · <span style="font-family:'JetBrains Mono',monospace;font-size:11px">${inv.serial}</span></div></div>
+      <span style="background:var(--blue-light);color:var(--blue);font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;flex-shrink:0;font-family:'JetBrains Mono',monospace">${inv.lines.length}ln·${totalQr}QR</span>
+    </div>`;
+    el.onclick=()=>riSelect(inv.id);
+    body.appendChild(el);
+  });
+}
+function riFilter(){ riRefreshList(document.getElementById('ri-search').value); }
+function riSelect(id){
+  riSelected=id;
+  const inv=invoicePackets.find(i=>i.id===id);
+  if(!inv) return;
+  document.getElementById('ri-serial').value=inv.serial||'—';
+  document.getElementById('ri-number').value=inv.number||'—';
+  document.getElementById('ri-customer').value=inv.customer||'—';
+  const tbody=document.getElementById('ri-lines-tbody');
+  const totalQr=inv.lines.reduce((s,l)=>s+(l.qty||1),0);
+  document.getElementById('ri-line-count').textContent=inv.lines.length+(inv.lines.length===1?' line':' lines')+' · '+totalQr+' QR codes';
+  if(inv.lines.length===0){
+    tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text3);font-size:13px">This invoice has no lines.</td></tr>';
+  } else {
+    tbody.innerHTML=inv.lines.map((l,i)=>`
+      <tr>
+        <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text3);border-bottom:1px solid var(--border)">${i+1}</td>
+        <td style="padding:10px 14px;font-size:13px;color:var(--text2);border-bottom:1px solid var(--border)">${escHtml(l.item)}</td>
+        <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);border-bottom:1px solid var(--border)">${escHtml(l.batch)}</td>
+        <td style="padding:10px 14px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);border-bottom:1px solid var(--border)">${l.qty||1}</td>
+        <td style="padding:10px 14px;text-align:right;border-bottom:1px solid var(--border)"><span style="background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:600;padding:2px 8px;border-radius:3px;font-family:'JetBrains Mono',monospace">${l.qty||1} QR</span></td>
+      </tr>`).join('');
+  }
+  document.getElementById('ri-meta').textContent=inv.serial+' · '+inv.lines.length+' lines · '+totalQr+' QR codes';
+  document.getElementById('ri-load-btn').disabled=false;
+  document.getElementById('ri-del-btn').disabled=false;
+  document.getElementById('ri-print-btn').disabled=inv.lines.length===0;
+  riRefreshList();
+}
+function riLoad(){
+  if(!riSelected) return;
+  const inv=invoicePackets.find(i=>i.id===riSelected);
+  if(!inv) return;
+  currentInvoice=JSON.parse(JSON.stringify(inv));
+  invSelectedId=inv.id;
+  navigate('invoice-packet');
+  document.getElementById('inv-serial').value=inv.serial;
+  document.getElementById('inv-number').value=inv.number;
+  document.getElementById('inv-customer').value=inv.customer;
+  setInvEditMode(false);
+  renderInvGrid(); renderInvLeftPanel();
+  showToast('Invoice "'+inv.number+'" loaded into Create Invoice Packet.','success');
+}
+function riDelete(){
+  if(!riSelected) return;
+  const inv=invoicePackets.find(i=>i.id===riSelected);
+  if(!inv) return;
+  invoicePackets=invoicePackets.filter(i=>i.id!==riSelected);
+  riSelected=null;
+  document.getElementById('ri-serial').value='';
+  document.getElementById('ri-number').value='';
+  document.getElementById('ri-customer').value='';
+  document.getElementById('ri-lines-tbody').innerHTML='<tr><td colspan="5" style="text-align:center;padding:36px;color:var(--text3);font-size:13px">Select an invoice from the list to view its lines.</td></tr>';
+  document.getElementById('ri-line-count').textContent='0 lines · 0 QR codes';
+  document.getElementById('ri-meta').textContent='No invoice selected';
+  document.getElementById('ri-load-btn').disabled=true;
+  document.getElementById('ri-del-btn').disabled=true;
+  document.getElementById('ri-print-btn').disabled=true;
+  addAudit('Delete','Received Invoice',inv.number||inv.serial);
+  riRefreshList();
+  showToast('Invoice "'+(inv.number||inv.serial)+'" deleted.','error');
+}
+
+// ════════════════════════════════════════════
+//  AUDIT LOG
+// ════════════════════════════════════════════
+function addAudit(action,module,record){
+  const now=new Date();
+  auditLog.unshift({time:now.toLocaleString(),user:'Admin User',action,module,record:record||'—',status:'Success'});
+  const colors={Create:'green',Update:'blue',Delete:'red',Print:'orange',Reprint:'orange'};
+  const actEl=document.getElementById('dash-activity');
+  const item=document.createElement('div');
+  item.className='activity-item';
+  item.innerHTML=`<div class="activity-dot ${colors[action]||'blue'}"></div><div><div class="activity-text">${action}: <strong>${record}</strong> in ${module}</div><div class="activity-time">${now.toLocaleTimeString()}</div></div>`;
+  actEl.insertBefore(item,actEl.firstChild);
+  const items=actEl.querySelectorAll('.activity-item');
+  if(items.length>8) items[items.length-1].remove();
+}
+function renderAuditTable(){
+  const tbody=document.getElementById('audit-tbody');
+  if(auditLog.length===0){ tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text3);font-size:13px;">No audit entries yet.</td></tr>'; return; }
+  tbody.innerHTML=auditLog.map((e,i)=>`
+    <tr>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text3)">${i+1}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${e.time}</td>
+      <td>${e.user}</td><td>${e.action}</td><td>${e.module}</td>
+      <td><strong>${e.record}</strong></td>
+      <td><span class="badge-status ${e.action==='Delete'?'danger':e.action==='Print'||e.action==='Reprint'?'warning':e.action==='Create'?'success':'info'}">${e.status}</span></td>
+    </tr>`).join('');
+}
+
+// ════════════════════════════════════════════
+//  DASHBOARD
+// ════════════════════════════════════════════
+function updateDashboard(){
+  document.getElementById('dash-cust-num').textContent=state.customer.records.length;
+  document.getElementById('dash-item-num').textContent=state.item.records.length;
+  document.getElementById('dash-batch-num').textContent=state.batch.records.length;
+  document.getElementById('dash-inv-num').textContent=invoicePackets.length;
+  document.getElementById('dash-cust-change').textContent='+'+state.customer.records.length;
+  document.getElementById('dash-item-change').textContent='+'+state.item.records.length;
+  document.getElementById('dash-batch-change').textContent='+'+state.batch.records.length;
+  document.getElementById('dash-inv-change').textContent='+'+invoicePackets.length;
+}
+
+// ════════════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════════════
+function showToast(msg,type='info'){
+  document.querySelectorAll('.toast').forEach(t=>t.remove());
+  const icons={
+    success:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>',
+    error:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+  };
+  const t=document.createElement('div');
+  t.className='toast '+(type==='success'?'success':type==='error'?'error':'');
+  t.innerHTML=(icons[type]||icons.info)+msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2600);
+}
+
+// ════════════════════════════════════════════
+//  CLOCK
+// ════════════════════════════════════════════
+function tick(){
+  const n=new Date();
+  document.getElementById('clock').textContent=
+    String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
+}
+tick(); setInterval(tick,1000);
+
+// ════════════════════════════════════════════
+//  TEST DATA + INIT
+// ════════════════════════════════════════════
+function loadTestData(){
+  [['Al-Shifa Medical Center','Hospital'],['City Pharmacy','Pharmacy'],['Jordan Health Distributors','Distributor']].forEach(([name,type])=>{
+    const serial='C-'+state.customer.counter;
+    state.customer.records.push({serial,name,type,id:Date.now()+Math.random()});
+    state.customer.counter++;
+  });
+  renderList('customer');
+
+  ['Amoxicillin 500mg','Paracetamol 1g','Metformin 850mg'].forEach(name=>{
+    const serial='I-'+state.item.counter;
+    state.item.records.push({serial,name,id:Date.now()+Math.random()});
+    state.item.counter++;
+  });
+  renderList('item');
+
+  [['Amoxicillin 500mg','BT-AMX-2024-01','2024-01-15','2026-01-15'],
+   ['Amoxicillin 500mg','BT-AMX-2024-02','2024-06-01','2026-06-01'],
+   ['Paracetamol 1g','BT-PCM-2024-01','2024-03-10','2026-03-10'],
+   ['Metformin 850mg','BT-MET-2024-01','2024-02-20','2026-02-20']].forEach(([name,batch,prod,exp])=>{
+    const serial='B-'+state.batch.counter;
+    state.batch.records.push({serial,name,batch,prod,exp,id:Date.now()+Math.random()});
+    state.batch.counter++;
+  });
+  renderList('batch');
+
+  const testInvoice={
+    id:Date.now()+Math.random(), serial:'IC-1',
+    number:'INV-2024-0001', customer:'Al-Shifa Medical Center',
+    lines:[
+      {lid:1,item:'Amoxicillin 500mg',batch:'BT-AMX-2024-01',qty:10},
+      {lid:2,item:'Paracetamol 1g',batch:'BT-PCM-2024-01',qty:5},
+      {lid:3,item:'Metformin 850mg',batch:'BT-MET-2024-01',qty:20},
+    ]
+  };
+  invoicePackets.push(testInvoice);
+  invSerial=2; invLineCounter=4;
+}
+
+loadTestData();
+
+// ✅ OPEN ON DASHBOARD
+navigate('dashboard');
+</script>
+</body>
+</html>
